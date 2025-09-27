@@ -22,6 +22,23 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()[0]
 output_details = interpreter.get_output_details()
 
+def detect_movement(image1, image2, threshold=30):
+    """Detects movement between two images by comparing pixel differences."""
+    # Convert images to grayscale
+    img1_gray = image1.convert("L")
+    img2_gray = image2.convert("L")
+
+    # Compute absolute difference between images
+    diff = np.abs(np.array(img1_gray, dtype=np.int16) - np.array(img2_gray, dtype=np.int16))
+    
+    # Threshold the difference to get binary image
+    movement_mask = (diff > threshold).astype(np.uint8) * 255
+    
+    # Calculate the percentage of changed pixels
+    movement_percentage = np.sum(movement_mask) / (movement_mask.shape[0] * movement_mask.shape[1] * 255)
+    
+    return movement_percentage > 0.01  # Return True if more than 1% of pixels changed
+
 # --- Detection function ---
 def detect_objects(image_path):
     # Load image
