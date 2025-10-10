@@ -1,8 +1,10 @@
-from picamera2 import Picamera2
 import cv2
+from picamera2 import Picamera2
 
 picam2 = Picamera2()
 picam2.start()
+cv2.namedWindow("Live Feed", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Live Feed", 640, 480)
 
 while True:
     frame = picam2.capture_array()
@@ -11,3 +13,5 @@ while True:
         break
 
 cv2.destroyAllWindows()
+
+

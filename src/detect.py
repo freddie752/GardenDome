@@ -4,8 +4,8 @@ import tensorflow as tf
 import os
 
 # --- Configuration ---
-MODEL_PATH = "models/detect.tflite"      # Path to your TFLite model
-LABELS_PATH = "models/labelmap.txt"      # Path to label file
+MODEL_PATH = "models/ssdmobilenet_v2_640_v2/detect.tflite"      # Path to your TFLite model
+LABELS_PATH = "models/ssdmobilenet_v2_640_v2/labelmap.txt"      # Path to label file
 TEST_IMAGES_DIR = "data/test_images/"    # Folder with images to test
 OUTPUT_DIR = "data/output/"              # Folder to save annotated images
 CONFIDENCE_THRESHOLD = 0.5               # Minimum score to consider a detection
@@ -22,7 +22,7 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()[0]
 output_details = interpreter.get_output_details()
 
-def detect_movement(image1, image2, threshold=30):
+def detect_movement(previous_frame, image2, threshold=30):
     """Detects movement between two images by comparing pixel differences."""
     # Convert images to grayscale
     img1_gray = image1.convert("L")
