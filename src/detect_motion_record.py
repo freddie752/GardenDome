@@ -8,7 +8,7 @@ from datetime import datetime
 
 RECORDING_DIR = "data/recording/"    
 BITRATE = 2000000
-MOTION_THRESHOLD = 10  # Pixel intensity difference threshold to detect motion
+MOTION_THRESHOLD = 20  # Pixel intensity difference threshold to detect motion
 
 class MotionDetectorRecorder:
     def __init__(self, recording_dir, bitrate, motion_threshold):
