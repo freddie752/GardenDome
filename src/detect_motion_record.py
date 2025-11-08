@@ -5,13 +5,10 @@ from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FileOutput
 from datetime import datetime
-
-RECORDING_DIR = "data/recording/"    
-BITRATE = 2000000
-MOTION_THRESHOLD = 20  # Pixel intensity difference threshold to detect motion
+from config import RECORDING_DIR, BITRATE, MOTION_THRESHOLD, SLACK_LOGGING
 
 class MotionDetectorRecorder:
-    def __init__(self, recording_dir, bitrate, motion_threshold):
+    def __init__(self, recording_dir, bitrate, motion_threshold, slack_bot=None):
         self.recording_dir = recording_dir
         self.bitrate = bitrate
         self.motion_threshold = motion_threshold
@@ -20,11 +17,13 @@ class MotionDetectorRecorder:
         self.picam2.configure(self.camera_config)
         self.picam2.start()
         self.encoder = H264Encoder(bitrate=self.bitrate)
+        self.slack_bot = slack_bot
 
     def detect_motion_record(self):
         """Detects motion and records video when motion is detected."""
         previous_frame = None
         previous_motion = False
+        self.log("Starting motion detection and recording.")
 
         while True:
             current_frame = self.get_frame()
@@ -40,14 +39,16 @@ class MotionDetectorRecorder:
                 filename = datetime.now().strftime("motion_%Y%m%d_%H%M%S.h264")
                 file_output = FileOutput(f"{self.recording_dir}{filename}")
                 self.picam2.start_recording(self.encoder, file_output)    
-                print(f"Motion detected. Recording to {filename}")
+                self.log(f"Motion detected. Recording to {filename}")
                 
                 #TODO: Live object recognition around contours
                 
             elif not current_motion and previous_motion:
                 # Stop recording
-                print("Motion stopped.")
+                self.log("Motion stopped.")
                 self.picam2.stop_recording()
+                if SLACK_LOGGING:
+                    self.slack_bot.send_video(f"{self.recording_dir}{filename}", filename)
                 self.picam2.start()
 
             previous_frame = current_frame 
@@ -79,7 +80,14 @@ class MotionDetectorRecorder:
         current_frame = cv2.GaussianBlur(src=current_frame, ksize=(5, 5), sigmaX=0)
 
         return current_frame
+    
+    def log(self, message):
+        print(message)
+        if SLACK_LOGGING:
+            self.slack_bot.send_message(message)
+        
 
 if __name__ == "__main__":
     motion_detector_recorder = MotionDetectorRecorder(RECORDING_DIR, BITRATE, MOTION_THRESHOLD)
     motion_detector_recorder.detect_motion_record()
+

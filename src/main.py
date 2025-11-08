@@ -1,16 +1,21 @@
-# This is a sample Python script.
+from detect_motion_record import MotionDetectorRecorder
+from slack import SlackBot
+from config import RECORDING_DIR, BITRATE, MOTION_THRESHOLD
+import os
+import threading
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")
+SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    slack_bot = SlackBot()
+    motion_detector_recorder = MotionDetectorRecorder(RECORDING_DIR, BITRATE, MOTION_THRESHOLD, slack_bot=slack_bot)
+    slack_thread = threading.Thread(target=slack_bot.start, daemon=True)
+    motion_thread = threading.Thread(target=motion_detector_recorder.detect_motion_record, daemon=True)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    slack_thread.start()
+    motion_thread.start()
+
+    slack_thread.join()
+    motion_thread.join()
+    
