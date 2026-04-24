@@ -1,2 +1,6 @@
 /src/tokens.py
 .env
+.venv
+.vscode
+nohup.out
+__pycache__/
