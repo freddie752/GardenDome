@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from PIL import ImageGrab
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FileOutput

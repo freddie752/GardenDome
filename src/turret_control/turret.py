@@ -1,4 +1,3 @@
-import time
 from PCA9685 import PCA9685
 
 MAX_TILT = 175

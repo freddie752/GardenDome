@@ -25,7 +25,7 @@ output_details = interpreter.get_output_details()
 def detect_movement(previous_frame, image2, threshold=30):
     """Detects movement between two images by comparing pixel differences."""
     # Convert images to grayscale
-    img1_gray = image1.convert("L")
+    img1_gray = previous_frame.convert("L")
     img2_gray = image2.convert("L")
 
     # Compute absolute difference between images

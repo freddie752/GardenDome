@@ -22,7 +22,7 @@ class SlackBot:
         try:
             resp = self._app.client.chat_postMessage(channel=self._channel, text=message)
             return resp
-        except Exception as e:
+        except Exception:
             raise
 
     def send_video(self, video_dir, video_filename):
