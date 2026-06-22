@@ -29,5 +29,6 @@ class Picamera2Recorder:
         self._camera.stop_recording()
         self._logger.video(self._recording_dir, self._current_file)
         self._current_file = None
+        self._is_recording = False
         self._logger.info("Recording stopped.")
         
