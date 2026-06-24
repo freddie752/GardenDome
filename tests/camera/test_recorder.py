@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
 from datetime import datetime
-from src.camera.recorder import Picamera2Recorder
+from camera.recorder import Picamera2Recorder
 
 @pytest.fixture
 def mock_camera():
@@ -27,8 +27,8 @@ def test_initial_state(picamera2_recorder):
     assert picamera2_recorder.is_recording is False
     assert picamera2_recorder._current_file is None
 
-@patch("src.camera.recorder.FileOutput")
-@patch("src.camera.recorder.datetime")
+@patch("camera.recorder.FileOutput")
+@patch("camera.recorder.datetime")
 @patch("builtins.open", new_callable=mock_open)
 def test_start_recording(mock_open_file, mock_datetime, mock_file_output, picamera2_recorder, mock_camera, mock_logger):
     mock_datetime.now.return_value.strftime.return_value = "motion_20250101_120000.h264"
@@ -59,7 +59,7 @@ def test_start_while_already_recording_raises(picamera2_recorder):
 
     assert "Recorder is already active" in str(exc.value)
 
-@patch("src.camera.recorder.datetime")
+@patch("camera.recorder.datetime")
 @patch("builtins.open", new_callable=mock_open)
 def test_stop_recording(mock_open_file, mock_datetime, picamera2_recorder, mock_camera, mock_logger):
     # Setup a recording to be active first (without calling the actual start method to avoid file ops)

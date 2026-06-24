@@ -1,11 +1,11 @@
 """Orchestrator that wires capture, detection, tracking, recording, and notification."""
 
 from picamera2 import Picamera2
-from src.camera.feed import Picamera2Feed
-from src.camera.recorder import Picamera2Recorder
-from src.logging.logger import Logger
-from src.logging.slack import SlackBot
-from src.detectors.motion_detector import MotionDetector
+from camera.feed import Picamera2Feed
+from camera.recorder import Picamera2Recorder
+from logging.logger import Logger
+from logging.slack import SlackBot
+from detectors.motion_detector import MotionDetector
 
 
 class MotionRecordingPipeline:
