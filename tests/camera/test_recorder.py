@@ -3,16 +3,16 @@ from unittest.mock import MagicMock, patch, mock_open
 from datetime import datetime
 from camera.recorder import Picamera2Recorder
 
+
 @pytest.fixture
 def mock_camera():
     return MagicMock()
 
+
 @pytest.fixture
 def mock_logger():
-    logger = MagicMock()
-    logger.info = MagicMock()
-    logger.video = MagicMock()
-    return logger
+    return MagicMock()
+
 
 @pytest.fixture
 def picamera2_recorder(mock_camera, mock_logger):
@@ -23,19 +23,22 @@ def picamera2_recorder(mock_camera, mock_logger):
         logger=mock_logger,
     )
 
+
 def test_initial_state(picamera2_recorder):
     assert picamera2_recorder.is_recording is False
     assert picamera2_recorder._current_file is None
 
+
 @patch("camera.recorder.FileOutput")
 @patch("camera.recorder.datetime")
-@patch("builtins.open", new_callable=mock_open)
-def test_start_recording(mock_open_file, mock_datetime, mock_file_output, picamera2_recorder, mock_camera, mock_logger):
-    mock_datetime.now.return_value.strftime.return_value = "motion_20250101_120000.h264"
+def test_start_recording(
+    mock_datetime, mock_file_output, picamera2_recorder, mock_camera, mock_logger
+):
+    mock_datetime.now.return_value.strftime.return_value = "20250101_120000"
 
-    picamera2_recorder.start(prefix="motion")
+    picamera2_recorder.start(prefix="test")
 
-    expected_filename = "motion_20250101_120000.h264"
+    expected_filename = "test_20250101_120000.h264"
     expected_path = f"/tmp/{expected_filename}"
 
     assert picamera2_recorder.is_recording is True
@@ -51,30 +54,37 @@ def test_start_recording(mock_open_file, mock_datetime, mock_file_output, picame
         f"Recording started. Storing at {expected_filename}"
     )
 
-def test_start_while_already_recording_raises(picamera2_recorder):
+
+def test_start_while_already_recording(picamera2_recorder):
     picamera2_recorder._is_recording = True
 
     with pytest.raises(RuntimeError) as exc:
-        picamera2_recorder.start(prefix="motion")
+        picamera2_recorder.start(prefix="test")
 
-    assert "Recorder is already active" in str(exc.value)
+    assert "Cannot start recording: Recorder is already active." in str(exc.value)
 
-@patch("camera.recorder.datetime")
-@patch("builtins.open", new_callable=mock_open)
-def test_stop_recording(mock_open_file, mock_datetime, picamera2_recorder, mock_camera, mock_logger):
-    # Setup a recording to be active first (without calling the actual start method to avoid file ops)
-    mock_datetime.now.return_value.strftime.return_value = "test_prefix_20230101_120000.h264"
+
+def test_stop_recording(picamera2_recorder, mock_camera, mock_logger):
     picamera2_recorder._is_recording = True
     picamera2_recorder._current_file = "test_prefix_20230101_120000.h264"
-
     picamera2_recorder.stop()
 
-    mock_camera.stop_recording.assert_called_once()
+    assert picamera2_recorder.is_recording is False
+    assert picamera2_recorder._current_file is None
 
+    mock_camera.stop_recording.assert_called_once()
     mock_logger.video.assert_called_once_with(
         "/tmp/",
         "test_prefix_20230101_120000.h264",
     )
+
     mock_logger.info.assert_called_once_with("Recording stopped.")
-    assert picamera2_recorder.is_recording is False
-    assert picamera2_recorder._current_file is None
+
+
+def test_stop_when_not_recording(picamera2_recorder):
+    picamera2_recorder._is_recording = False
+
+    with pytest.raises(RuntimeError) as exc:
+        picamera2_recorder.stop()
+
+    assert "Cannot stop recording: Recorder is not active." in str(exc.value)

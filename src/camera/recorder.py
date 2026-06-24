@@ -20,12 +20,15 @@ class Picamera2Recorder:
         if self._is_recording:
             raise RuntimeError("Cannot start recording: Recorder is already active.")
         self._is_recording = True
-        self._current_file = datetime.now().strftime(f"{prefix}_%Y%m%d_%H%M%S.h264")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self._current_file = f"{prefix}_{timestamp}.h264"
         file_output = FileOutput(f"{self._recording_dir}{self._current_file}")
         self._camera.start_recording(self._encoder, file_output)
         self._logger.info(f"Recording started. Storing at {self._current_file}")
         
     def stop(self):
+        if not self._is_recording:
+            raise RuntimeError("Cannot stop recording: Recorder is not active.")
         self._camera.stop_recording()
         self._logger.video(self._recording_dir, self._current_file)
         self._current_file = None
