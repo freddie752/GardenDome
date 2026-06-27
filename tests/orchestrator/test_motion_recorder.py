@@ -1,33 +1,19 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import numpy as np
 
+from orchestrator.motion_recorder import MotionRecordingPipeline
 
 def make_pipeline():
-    """
-    Build a MotionRecordingPipeline with all external dependencies mocked,
-    bypassing __init__ so we control the initial state directly.
-    """
-    with patch("orchestrator.motion_recorder.Picamera2"), \
-         patch("orchestrator.motion_recorder.Picamera2Feed"), \
-         patch("orchestrator.motion_recorder.Picamera2Recorder"), \
-         patch("orchestrator.motion_recorder.MotionDetector"), \
-         patch("orchestrator.motion_recorder.Logger"), \
-         patch("orchestrator.motion_recorder.SlackBot"):
-
-        from orchestrator.motion_recorder import MotionRecordingPipeline
-
-        config = MagicMock()
-        pipeline = MotionRecordingPipeline.__new__(MotionRecordingPipeline)
-        pipeline._config = config
-        pipeline._logger = MagicMock()
-        pipeline._feed = MagicMock()
-        pipeline._recorder = MagicMock()
-        pipeline._motion_detector = MagicMock()
-        pipeline._picam2 = MagicMock()
-        pipeline._previous_frame = np.zeros((100, 100), dtype=np.uint8)
-        pipeline._previous_motion = False
-
-        return pipeline
+    pipeline = MotionRecordingPipeline.__new__(MotionRecordingPipeline)
+    pipeline._config = MagicMock()
+    pipeline._logger = MagicMock()
+    pipeline._feed = MagicMock()
+    pipeline._recorder = MagicMock()
+    pipeline._motion_detector = MagicMock()
+    pipeline._picam2 = MagicMock()
+    pipeline._previous_frame = np.zeros((100, 100), dtype=np.uint8)
+    pipeline._previous_motion = False
+    return pipeline
 
 def test_motion_start_triggers_recorder_start():
     pipeline = make_pipeline()
