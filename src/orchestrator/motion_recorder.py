@@ -1,44 +1,25 @@
 """Orchestrator that wires capture, detection, tracking, recording, and notification."""
 
-from picamera2 import Picamera2
-from camera.feed import Picamera2Feed
-from camera.recorder import Picamera2Recorder
-from notifications.logger import Logger
-from notifications.slack import SlackBot
-from detectors.motion_detector import MotionDetector
+from orchestrator.base import (
+    BasePipeline,
+    LoggingMixin,
+    CameraMixin,
+    RecorderMixin,
+    MotionDetectorMixin,
+)
 
 
-class MotionRecordingPipeline:
+class MotionRecordingPipeline(
+    BasePipeline, LoggingMixin, CameraMixin, RecorderMixin, MotionDetectorMixin
+):
     def __init__(self, config):
-        self._config = config
+        super.__init__(config)
         self._setup_logging()
-        self._setup_camera_components()
+        self._setup_camera()
+        self._setup_recorder()
+        self._setup_motion_detector()
         self._previous_motion = False
         self._previous_frame = self._feed.get_frame()
-
-    def _setup_logging(self):
-        if self._config.SLACK_LOGGING:
-            slack_bot = SlackBot(slack_channel=self._config.SLACK_CHANNEL)
-            self._logger = Logger(slack_logging=True, slack_bot=slack_bot)
-        else:
-            self._logger = Logger(slack_logging=False)
-
-    def _setup_camera_components(self):
-        self._picam2 = Picamera2()
-        camera_config = self._picam2.create_video_configuration()
-        self._picam2.configure(camera_config)
-        self._picam2.start()
-        self._feed = Picamera2Feed(camera=self._picam2)
-        self._recorder = Picamera2Recorder(
-            logger=self._logger,
-            camera=self._picam2,
-            recording_dir=self._config.RECORDING_DIR,
-            bitrate=self._config.BITRATE,
-        )
-        self._motion_detector = MotionDetector(
-            motion_threshold=self._config.MOTION_THRESHOLD,
-            motion_fraction=self._config.MOTION_FRACTION,
-        )
 
     def __enter__(self):
         return self
