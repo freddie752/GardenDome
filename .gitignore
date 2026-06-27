@@ -7,3 +7,6 @@ __pycache__/
 # Setuptools build and metadata artifacts
 *.egg-info/
 *.egg
+
+# Test coverage
+.coverage

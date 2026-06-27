@@ -6,3 +6,4 @@ python-dotenv==1.2.2
 Requests==2.34.2
 slack_bolt==1.26.0
 slack_sdk==3.37.0
+coverage==7.14.3
