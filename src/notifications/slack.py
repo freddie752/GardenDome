@@ -22,8 +22,8 @@ class SlackBot:
         try:
             resp = self._app.client.chat_postMessage(channel=self._channel, text=message)
             return resp
-        except Exception:
-            raise
+        except Exception as e:
+            print(f"Failed to send message: {e}")
 
     def send_video(self, video_dir, video_filename):
         video_path = os.path.join(video_dir, video_filename)

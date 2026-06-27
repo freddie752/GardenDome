@@ -1,5 +1,5 @@
 from scripts.detect_motion_record import MotionDetectorRecorder
-from logging.slack import SlackBot
+from notifications.slack import SlackBot
 from config import RECORDING_DIR, BITRATE, MOTION_THRESHOLD, SLACK_CHANNEL
 import os
 import threading

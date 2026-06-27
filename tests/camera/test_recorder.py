@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch, mock_open
-from datetime import datetime
+from unittest.mock import MagicMock, patch
 from camera.recorder import Picamera2Recorder
 
 

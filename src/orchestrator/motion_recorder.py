@@ -3,8 +3,8 @@
 from picamera2 import Picamera2
 from camera.feed import Picamera2Feed
 from camera.recorder import Picamera2Recorder
-from logging.logger import Logger
-from logging.slack import SlackBot
+from notifications.logger import Logger
+from notifications.slack import SlackBot
 from detectors.motion_detector import MotionDetector
 
 
