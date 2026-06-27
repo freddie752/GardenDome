@@ -1,10 +1,8 @@
-numpy==1.24.2
-opencv_python==4.12.0.88
-Pillow==9.4.0
-Pillow==12.2.0
+numpy
+opencv-python-headless
+Pillow
 pytest==9.0.3
 python-dotenv==1.2.2
 Requests==2.34.2
 slack_bolt==1.26.0
 slack_sdk==3.37.0
-tensorflow==2.21.0
