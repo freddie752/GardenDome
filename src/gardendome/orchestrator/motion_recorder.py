@@ -49,7 +49,7 @@ class MotionRecordingPipeline(
     def _step(self):
         current_frame = self._feed.get_grey_frame()
 
-        current_motion = self._motion_detector.detect(
+        current_motion = self._motion_detector.has_motion(
             current_frame=current_frame,
             previous_frame=self._previous_frame,
         )
