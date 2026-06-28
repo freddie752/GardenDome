@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
  
-from notifications.logger import Logger
+from gardendome.notifications.logger import Logger
  
  
 @pytest.fixture

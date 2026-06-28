@@ -1,6 +1,6 @@
 """Orchestrator that wires capture, detection, tracking, recording, and notification."""
 
-from orchestrator.base import (
+from gardendome.orchestrator.base import (
     BasePipeline,
     LoggingMixin,
     CameraMixin,

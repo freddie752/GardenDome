@@ -1,9 +1,9 @@
-from notifications.logger import Logger
-from notifications.slack import SlackBot
+from gardendome.notifications.logger import Logger
+from gardendome.notifications.slack import SlackBot
 from picamera2 import Picamera2
-from camera.feed import Picamera2Feed
-from camera.recorder import Picamera2Recorder
-from detectors.motion_detector import MotionDetector
+from gardendome.camera.feed import Picamera2Feed
+from gardendome.camera.recorder import Picamera2Recorder
+from gardendome.detectors.motion_detector import MotionDetector
 
 
 class BasePipeline:

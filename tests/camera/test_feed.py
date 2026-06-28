@@ -1,6 +1,6 @@
 import numpy as np
 from unittest.mock import MagicMock
-from camera.feed import Picamera2Feed
+from gardendome.camera.feed import Picamera2Feed
 
 
 def make_camera(frame):

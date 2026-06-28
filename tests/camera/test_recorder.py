@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from camera.recorder import Picamera2Recorder
+from gardendome.camera.recorder import Picamera2Recorder
 
 
 @pytest.fixture
@@ -28,8 +28,8 @@ def test_initial_state(picamera2_recorder):
     assert picamera2_recorder._current_file is None
 
 
-@patch("camera.recorder.FileOutput")
-@patch("camera.recorder.datetime")
+@patch("gardendome.camera.recorder.FileOutput")
+@patch("gardendome.camera.recorder.datetime")
 def test_start_recording(
     mock_datetime, mock_file_output, picamera2_recorder, mock_camera, mock_logger
 ):

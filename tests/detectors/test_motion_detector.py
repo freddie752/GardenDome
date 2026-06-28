@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from detectors.motion_detector import MotionDetector
+from gardendome.detectors.motion_detector import MotionDetector
  
  
 def greyscale_frame(height, width, value):
