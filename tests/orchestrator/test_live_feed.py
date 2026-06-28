@@ -19,8 +19,8 @@ def test_step_returns_true_when_q_not_pressed():
         (100, 100, 3), dtype=np.uint8
     )
     with (
-        patch("gardendome.orchestrator.live_feed.cv2.imshow"),
-        patch("gardendome.orchestrator.live_feed.cv2.waitKey", return_value=0),
+        patch("gardendome.orchestrator.base.cv2.imshow"),
+        patch("gardendome.orchestrator.base.cv2.waitKey", return_value=0),
     ):
         assert pipeline._step() is True
 
@@ -31,8 +31,8 @@ def test_step_returns_false_when_q_pressed():
         (100, 100, 3), dtype=np.uint8
     )
     with (
-        patch("gardendome.orchestrator.live_feed.cv2.imshow"),
-        patch("gardendome.orchestrator.live_feed.cv2.waitKey", return_value=ord("q")),
+        patch("gardendome.orchestrator.base.cv2.imshow"),
+        patch("gardendome.orchestrator.base.cv2.waitKey", return_value=ord("q")),
     ):
         assert pipeline._step() is False
 
@@ -43,8 +43,8 @@ def test_step_gets_colour_frame():
         (100, 100, 3), dtype=np.uint8
     )
     with (
-        patch("gardendome.orchestrator.live_feed.cv2.imshow"),
-        patch("gardendome.orchestrator.live_feed.cv2.waitKey", return_value=0),
+        patch("gardendome.orchestrator.base.cv2.imshow"),
+        patch("gardendome.orchestrator.base.cv2.waitKey", return_value=0),
     ):
         pipeline._step()
     pipeline._feed.get_colour_frame.assert_called_once()
@@ -55,8 +55,8 @@ def test_step_shows_frame_in_correct_window():
     frame = np.zeros((100, 100, 3), dtype=np.uint8)
     pipeline._feed.get_colour_frame.return_value = frame
     with (
-        patch("gardendome.orchestrator.live_feed.cv2.imshow") as mock_imshow,
-        patch("gardendome.orchestrator.live_feed.cv2.waitKey", return_value=0),
+        patch("gardendome.orchestrator.base.cv2.imshow") as mock_imshow,
+        patch("gardendome.orchestrator.base.cv2.waitKey", return_value=0),
     ):
         pipeline._step()
     mock_imshow.assert_called_once_with("Live Feed", frame)
@@ -65,7 +65,7 @@ def test_step_shows_frame_in_correct_window():
 def test_stop_cleans_up():
     pipeline = make_pipeline()
     with patch(
-        "gardendome.orchestrator.live_feed.cv2.destroyAllWindows"
+        "gardendome.orchestrator.base.cv2.destroyAllWindows"
     ) as mock_destroy:
         pipeline.stop()
     mock_destroy.assert_called_once()
@@ -79,8 +79,8 @@ def test_step_gets_grey_frame_when_colour_false():
     pipeline._colour = False
     pipeline._feed.get_grey_frame.return_value = np.zeros((100, 100), dtype=np.uint8)
     with (
-        patch("gardendome.orchestrator.live_feed.cv2.imshow"),
-        patch("gardendome.orchestrator.live_feed.cv2.waitKey", return_value=0),
+        patch("gardendome.orchestrator.base.cv2.imshow"),
+        patch("gardendome.orchestrator.base.cv2.waitKey", return_value=0),
     ):
         pipeline._step()
     pipeline._feed.get_grey_frame.assert_called_once()
