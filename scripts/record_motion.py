@@ -1,4 +1,4 @@
-import config
+from gardendome import config
 from gardendome.orchestrator.motion_recorder import MotionRecordingPipeline
 
 if __name__ == '__main__':

@@ -4,3 +4,7 @@ MOTION_THRESHOLD = 20  # Pixel intensity difference threshold to detect motion
 MOTION_FRACTION = 0.01  # Fraction of pixels that must change to trigger motion detection
 SLACK_LOGGING = True
 SLACK_CHANNEL = "C09M5FPTSLV"
+TURRET_MAX_TILT = 175
+TURRET_MIN_TILT = 65
+TURRET_MAX_PAN = 180
+TURRET_MIN_PAN = 0
