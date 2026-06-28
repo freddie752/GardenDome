@@ -7,10 +7,11 @@ from gardendome.orchestrator.base import (
 
 
 class LiveFeedPipeline(BasePipeline, CameraMixin, LoggingMixin):
-    def __init__(self, config):
+    def __init__(self, config, colour=True):
         super().__init__(config)
         self._setup_logging()
         self._setup_camera()
+        self._colour = colour
         cv2.namedWindow("Live Feed", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Live Feed", 640, 480)
 
@@ -26,6 +27,9 @@ class LiveFeedPipeline(BasePipeline, CameraMixin, LoggingMixin):
         self._picam2.close()
 
     def _step(self):
-        frame = self._feed.get_colour_frame()
+        if self._colour:
+            frame = self._feed.get_colour_frame()
+        else:
+            frame = self._feed.get_grey_frame()
         cv2.imshow("Live Feed", frame)
         return cv2.waitKey(1) & 0xFF != ord('q')

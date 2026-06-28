@@ -9,6 +9,7 @@ def make_pipeline():
     pipeline._logger = MagicMock()
     pipeline._feed = MagicMock()
     pipeline._picam2 = MagicMock()
+    pipeline._colour = True
     return pipeline
 
 
@@ -71,3 +72,16 @@ def test_stop_cleans_up():
     pipeline._picam2.stop.assert_called_once()
     pipeline._picam2.close.assert_called_once()
     pipeline._logger.info.assert_called_once()
+
+
+def test_step_gets_grey_frame_when_colour_false():
+    pipeline = make_pipeline()
+    pipeline._colour = False
+    pipeline._feed.get_grey_frame.return_value = np.zeros((100, 100), dtype=np.uint8)
+    with (
+        patch("gardendome.orchestrator.live_feed.cv2.imshow"),
+        patch("gardendome.orchestrator.live_feed.cv2.waitKey", return_value=0),
+    ):
+        pipeline._step()
+    pipeline._feed.get_grey_frame.assert_called_once()
+    pipeline._feed.get_colour_frame.assert_not_called()
