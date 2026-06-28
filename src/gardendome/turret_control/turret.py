@@ -1,32 +1,40 @@
-from PCA9685 import PCA9685
+from gardendome.turret_control.PCA9685 import PCA9685
 
-MAX_TILT = 175
-MIN_TILT = 65
-MAX_PAN = 180
-MIN_PAN = 0
 
-START_PAN = 90
-START_TILT = 120
+class Turret:
+    def __init__(
+        self, logger, min_tilt, max_tilt, min_pan, max_pan, start_tilt, start_pan
+    ):
+        self._logger = logger
+        self._pwm = PCA9685()
+        self._pwm.setPWMFreq(50)
+        self._min_tilt = min_tilt
+        self._max_tilt = max_tilt
+        self._min_pan = min_pan
+        self._max_pan = max_pan
+        self._current_tilt = None
+        self._current_pan = None
+        self.set_tilt(start_tilt)
+        self.set_pan(start_pan)
 
-class Turret():
-    
-    def __init__(self):
-        self.pwm = PCA9685()
-        self.pwm.setPWMFreq(50)
-        self.pwm.setRotationAngle(0, START_TILT)
-        self.pwm.setRotationAngle(1, START_PAN)
-        
-    def tilt(self, tilt_coord):
-        if (MIN_TILT <= tilt_coord <= MAX_TILT):
-            self.pwm.setRotationAngle(0, tilt_coord)
+    def set_tilt(self, tilt_coord):
+        if self._min_tilt <= tilt_coord <= self._max_tilt:
+            self._pwm.setRotationAngle(0, tilt_coord)
+            self._current_tilt = tilt_coord
         else:
-            print("Invalid tilt coord")
-            
-    def pan(self, pan_coord):
-        if (MIN_PAN <= pan_coord <= MAX_PAN):
-            self.pwm.setRotationAngle(1, pan_coord)
-        else:
-            print("Invalid pan coord")
-        
+            self._logger.info("Invalid tilt coord")
 
-t = Turret()
+    @property
+    def current_tilt(self):
+        return self._current_tilt
+
+    def set_pan(self, pan_coord):
+        if self._min_pan <= pan_coord <= self._max_pan:
+            self._pwm.setRotationAngle(1, pan_coord)
+            self._current_pan = pan_coord
+        else:
+            self._logger.info("Invalid pan coord")
+
+    @property
+    def current_pan(self):
+        return self._current_pan
