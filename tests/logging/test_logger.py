@@ -44,9 +44,6 @@ def test_video_skips_slack_when_disabled(mock_bot):
     mock_bot.send_video.assert_not_called()
  
  
-# BUG: video() builds its print path as f"{video_dir}{video_filename}" with no
-# separator, so Logger.video("/recordings", "motion_event.mp4") prints
-# "/recordingsmotion_event.mp4" instead of "/recordings/motion_event.mp4".
 def test_video_print_contains_valid_path(capsys, mock_bot):
     log = Logger(slack_logging=False, slack_bot=mock_bot)
     log.video("/recordings", "motion_event.mp4")  # no trailing slash
