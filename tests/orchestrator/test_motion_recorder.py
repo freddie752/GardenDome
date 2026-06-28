@@ -60,7 +60,7 @@ def test_no_action_when_no_motion_continues():
 def test_step_updates_previous_frame():
     pipeline = make_pipeline()
     new_frame = np.ones((100, 100), dtype=np.uint8) * 128
-    pipeline._feed.get_frame.return_value = new_frame
+    pipeline._feed.get_grey_frame.return_value = new_frame
     pipeline._motion_detector.detect.return_value = False
 
     pipeline._step()
@@ -70,7 +70,7 @@ def test_step_updates_previous_frame():
 
 def test_step_updates_previous_motion():
     pipeline = make_pipeline()
-    pipeline._feed.get_frame.return_value = np.zeros((100, 100), dtype=np.uint8)
+    pipeline._feed.get_grey_frame.return_value = np.zeros((100, 100), dtype=np.uint8)
     pipeline._motion_detector.detect.return_value = True
 
     pipeline._step()
@@ -82,7 +82,7 @@ def test_step_passes_correct_frames_to_detector():
     pipeline = make_pipeline()
     previous_frame = pipeline._previous_frame
     new_frame = np.ones((100, 100), dtype=np.uint8) * 64
-    pipeline._feed.get_frame.return_value = new_frame
+    pipeline._feed.get_grey_frame.return_value = new_frame
     pipeline._motion_detector.detect.return_value = False
 
     pipeline._step()
