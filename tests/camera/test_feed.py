@@ -67,3 +67,12 @@ def test_get_colour_frame_no_blur_applied():
     edge_pixels = colour[:, 49:52, :]
     assert edge_pixels.min() == 0
     assert edge_pixels.max() == 255
+
+
+def test_get_frame_rotates_180():
+    rgb_frame = np.zeros((100, 100, 3), dtype=np.uint8)
+    rgb_frame[0, 0] = 255
+    feed = Picamera2Feed(make_camera(rgb_frame))
+    frame = feed.get_colour_frame()
+    assert frame[99, 99].any()
+    assert not frame[0, 0].any()
