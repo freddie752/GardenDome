@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from gardendome.notifications.logger import Logger
 from gardendome.notifications.slack import SlackBot
 from picamera2 import Picamera2
@@ -6,10 +7,23 @@ from gardendome.camera.recorder import Picamera2Recorder
 from gardendome.detectors.motion_detector import MotionDetector
 
 
-class BasePipeline:
+class BasePipeline(ABC):
     def __init__(self, config):
         self._config = config
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.stop()
+
+    @abstractmethod
+    def stop():
+        pass
+
+    @abstractmethod
+    def run():
+        pass
 
 class LoggingMixin:
     def _setup_logging(self):

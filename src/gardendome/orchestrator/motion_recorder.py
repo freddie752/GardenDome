@@ -13,19 +13,13 @@ class MotionRecordingPipeline(
     BasePipeline, LoggingMixin, CameraMixin, RecorderMixin, MotionDetectorMixin
 ):
     def __init__(self, config):
-        super.__init__(config)
+        super().__init__(config)
         self._setup_logging()
         self._setup_camera()
         self._setup_recorder()
         self._setup_motion_detector()
         self._previous_motion = False
-        self._previous_frame = self._feed.get_frame()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb):
-        self.stop()
+        self._previous_frame = self._feed.get_grey_frame()
 
     def run(self):
         self._logger.info("Starting motion detection and recording.")
@@ -33,7 +27,7 @@ class MotionRecordingPipeline(
             self._step()
 
     def stop(self):
-        self._logger.info("Stopping pipeline.")
+        self._logger.info("Stopping motion detection and recording..")
         self._picam2.stop()
         self._picam2.close()
 
@@ -53,7 +47,7 @@ class MotionRecordingPipeline(
         self._recorder.stop()
 
     def _step(self):
-        current_frame = self._feed.get_frame()
+        current_frame = self._feed.get_grey_frame()
 
         current_motion = self._motion_detector.detect(
             current_frame=current_frame,
