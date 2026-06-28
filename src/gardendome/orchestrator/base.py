@@ -26,6 +26,7 @@ class BasePipeline(ABC):
     def run():
         pass
 
+
 class LoggingMixin:
     def _setup_logging(self):
         if self._config.SLACK_LOGGING:
@@ -60,6 +61,18 @@ class MotionDetectorMixin:
             motion_threshold=self._config.MOTION_THRESHOLD,
             motion_fraction=self._config.MOTION_FRACTION,
         )
+        self._previous_frame = self._feed.get_grey_frame()
+
+    def _get_motion(self):
+        current_frame = self._feed.get_grey_frame()
+
+        current_motion = self._motion_detector.has_motion(
+            current_frame=current_frame,
+            previous_frame=self._previous_frame,
+        )
+        self._previous_frame = current_frame
+        return current_motion
+
 
 class TurretMixin:
     def _setup_turret(self):

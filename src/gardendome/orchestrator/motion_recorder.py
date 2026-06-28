@@ -19,7 +19,6 @@ class MotionRecordingPipeline(
         self._setup_recorder()
         self._setup_motion_detector()
         self._previous_motion = False
-        self._previous_frame = self._feed.get_grey_frame()
 
     def run(self):
         self._logger.info("Starting motion detection and recording.")
@@ -47,14 +46,6 @@ class MotionRecordingPipeline(
         self._recorder.stop()
 
     def _step(self):
-        current_frame = self._feed.get_grey_frame()
-
-        current_motion = self._motion_detector.has_motion(
-            current_frame=current_frame,
-            previous_frame=self._previous_frame,
-        )
-
+        current_motion = self._get_motion()
         self._handle_transitions(current_motion)
-
-        self._previous_frame = current_frame
         self._previous_motion = current_motion
