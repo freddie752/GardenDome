@@ -3,8 +3,8 @@ RECORDING_DIR = "data/recording/"
 BITRATE = 2000000
 
 # Motion detection
-MOTION_THRESHOLD = 20   # Pixel intensity difference threshold to detect motion
-MOTION_FRACTION = 0.01  # Fraction of pixels that must change to trigger motion detection
+MOTION_THRESHOLD = 50  # Pixel intensity difference to detect
+MOTION_FRACTION = 0.01  # Fraction of pixels change to detect
 
 # Slack
 SLACK_LOGGING = True
@@ -17,3 +17,6 @@ TURRET_MAX_PAN = 180
 TURRET_MIN_PAN = 0
 TURRET_START_PAN = 90
 TURRET_START_TILT = 120
+TURRET_DEAD_ZONE = 20
+TURRET_SETTLE_FRAMES = 3
+TURRET_AIM_ADJUST = 5

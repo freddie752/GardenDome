@@ -6,7 +6,7 @@ from picamera2 import Picamera2
 from gardendome.camera.feed import Picamera2Feed
 from gardendome.camera.recorder import Picamera2Recorder
 from gardendome.detectors.motion_detector import MotionDetector
-from gardendome.turret_control.turret import Turret
+from gardendome.turret_control.turret import Turret, TurretConfig
 from gardendome.tracking.tracker import Tracker
 
 
@@ -87,15 +87,18 @@ class MotionDetectorMixin:
 
 class TurretMixin:
     def _setup_turret(self):
-        self._turret = Turret(
-            logger=self._logger,
+        turret_config = TurretConfig(
             min_tilt=self._config.TURRET_MIN_TILT,
             max_tilt=self._config.TURRET_MAX_TILT,
             min_pan=self._config.TURRET_MIN_PAN,
             max_pan=self._config.TURRET_MAX_PAN,
             start_tilt=self._config.TURRET_START_TILT,
             start_pan=self._config.TURRET_START_PAN,
+            dead_zone=self._config.TURRET_DEAD_ZONE,
+            settle_frames=self._config.TURRET_SETTLE_FRAMES,
+            aim_adjust=self._config.TURRET_AIM_ADJUST,
         )
+        self._turret = Turret(logger=self._logger, turret_config=turret_config)
 
 
 class TrackerMixin:

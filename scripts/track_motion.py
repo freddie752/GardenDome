@@ -1,6 +1,6 @@
 from gardendome import config
-from gardendome.orchestrator.live_feed import MotionDisplayPipeline
+from gardendome.orchestrator.turret_tracker import TurretTracker
 
 if __name__ == '__main__':
-    with MotionDisplayPipeline(config) as pipeline:
+    with TurretTracker(config) as pipeline:
         pipeline.run()
