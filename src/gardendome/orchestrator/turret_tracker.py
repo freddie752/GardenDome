@@ -11,7 +11,6 @@ class TurretTracker(
 ):
     def __init__(self, config):
         super().__init__(config)
-        self._setup_logging()
         self._setup_turret()
         self._setup_motion_detector()
         self._setup_tracker()
