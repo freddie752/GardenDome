@@ -65,23 +65,28 @@ class MotionDetectorMixin:
         )
         self._previous_frame = self._feed.get_grey_frame()
 
-    def _get_motion(self):
+    def _next_frames(self):
+        """Grabs the next grey frame; returns the previous and new frames and stores the new one."""
+        previous_frame = self._previous_frame
         current_frame = self._feed.get_grey_frame()
-
-        current_motion = self._motion_detector.has_motion(
-            current_frame=current_frame,
-            previous_frame=self._previous_frame,
-        )
         self._previous_frame = current_frame
-        return current_motion
+        return previous_frame, current_frame
 
-    def _get_motion_bbox(self):
-        current_frame = self._feed.get_grey_frame()
+    def _poll_motion(self):
+        """Grabs the next grey frame; returns whether it has motion."""
+        previous_frame, current_frame = self._next_frames()
+        return self._motion_detector.has_motion(
+            previous_frame=previous_frame,
+            current_frame=current_frame,
+        )
+
+    def _poll_motion_location(self):
+        """Grabs the next grey frame; returns it and the motion bounding box, or None."""
+        previous_frame, current_frame = self._next_frames()
         bbox = self._motion_detector.locate_motion(
+            previous_frame=previous_frame,
             current_frame=current_frame,
-            previous_frame=self._previous_frame,
         )
-        self._previous_frame = current_frame
         return current_frame, bbox
 
 

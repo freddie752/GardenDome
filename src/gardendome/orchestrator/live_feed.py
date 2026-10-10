@@ -21,5 +21,5 @@ class MotionDisplayPipeline(BaseDisplayPipeline, MotionDetectorMixin, TrackerMix
         self._setup_tracker()
 
     def _get_frame(self):
-        frame, bbox = self._get_motion_bbox()
+        frame, bbox = self._poll_motion_location()
         return self._tracker.draw_box(frame, bbox) if bbox else frame

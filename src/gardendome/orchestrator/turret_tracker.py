@@ -17,7 +17,7 @@ class TurretTracker(
         self._settle_counter = 0
 
     def _get_frame(self):
-        frame, bbox = self._get_motion_bbox()
+        frame, bbox = self._poll_motion_location()
         if self._settle_counter > 0:
             self._settle_counter -= 1
         elif bbox:

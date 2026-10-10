@@ -46,6 +46,6 @@ class MotionRecordingPipeline(
         self._recorder.stop()
 
     def _step(self):
-        current_motion = self._get_motion()
+        current_motion = self._poll_motion()
         self._handle_transitions(current_motion)
         self._previous_motion = current_motion
