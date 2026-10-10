@@ -2,6 +2,7 @@ numpy
 opencv-python-headless
 Pillow
 pytest==9.0.3
+pytest-cov
 python-dotenv==1.2.2
 Requests==2.34.2
 slack_bolt==1.26.0
