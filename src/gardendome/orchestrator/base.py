@@ -1,13 +1,16 @@
-import cv2
 from abc import ABC, abstractmethod
-from gardendome.notifications.logger import Logger
-from gardendome.notifications.slack import SlackBot
+
+import cv2
 from picamera2 import Picamera2
+
 from gardendome.camera.feed import Picamera2Feed
 from gardendome.camera.recorder import Picamera2Recorder
 from gardendome.detectors.motion_detector import MotionDetector
-from gardendome.turret_control.turret import Turret, TurretConfig
+from gardendome.detectors.object_detector import ObjectDetector
+from gardendome.notifications.logger import Logger
+from gardendome.notifications.slack import SlackBot
 from gardendome.tracking.tracker import Tracker
+from gardendome.turret_control.turret import Turret, TurretConfig
 
 
 class BasePipeline(ABC):
@@ -88,6 +91,21 @@ class MotionDetectorMixin:
             current_frame=current_frame,
         )
         return current_frame, bbox
+
+
+class ObjectDetectorMixin:
+    def _setup_object_detector(self):
+        self._object_detector = ObjectDetector(
+            model_path=self._config.DETECTOR_MODEL_PATH,
+            num_threads=self._config.DETECTOR_NUM_THREADS,
+            labels_path=self._config.DETECTOR_LABELS_PATH,
+            score_threshold=self._config.DETECTOR_SCORE_THRESHOLD,
+        )
+
+    def _poll_detections(self):
+        """Grabs the next colour frame; returns it and its detections, highest score first."""
+        current_frame = self._feed.get_colour_frame()
+        return current_frame, self._object_detector.detect(current_frame)
 
 
 class TurretMixin:

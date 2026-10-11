@@ -1,6 +1,12 @@
 import numpy as np
 from unittest.mock import MagicMock, patch
-from gardendome.orchestrator.live_feed import LiveFeedPipeline
+from gardendome.detectors.object_detector import Detection
+from gardendome.orchestrator.live_feed import (
+    LiveFeedPipeline,
+    MotionDisplayPipeline,
+    ObjectDisplayPipeline,
+)
+from gardendome.tracking.tracker import Tracker
 
 
 def make_pipeline():
@@ -85,3 +91,43 @@ def test_step_gets_grey_frame_when_colour_false():
         pipeline._step()
     pipeline._feed.get_grey_frame.assert_called_once()
     pipeline._feed.get_colour_frame.assert_not_called()
+
+
+def test_motion_display_draws_box_on_analysed_frame():
+    pipeline = MotionDisplayPipeline.__new__(MotionDisplayPipeline)
+    pipeline._feed = MagicMock()
+    pipeline._motion_detector = MagicMock()
+    pipeline._tracker = Tracker()
+    previous_frame = np.zeros((200, 200), dtype=np.uint8)
+    new_frame = np.zeros((200, 200), dtype=np.uint8)
+    pipeline._previous_frame = previous_frame
+    pipeline._feed.get_grey_frame.return_value = new_frame
+    pipeline._motion_detector.locate_motion.return_value = (20, 30, 40, 50)
+
+    frame = pipeline._get_frame()
+
+    pipeline._motion_detector.locate_motion.assert_called_once_with(
+        previous_frame=previous_frame, current_frame=new_frame
+    )
+    assert frame is new_frame
+    assert frame[30, 20] == 255  # top-left corner
+    assert frame[80, 60] == 255  # bottom-right corner
+
+
+def test_object_display_draws_box_on_analysed_frame():
+    pipeline = ObjectDisplayPipeline.__new__(ObjectDisplayPipeline)
+    pipeline._feed = MagicMock()
+    pipeline._object_detector = MagicMock()
+    pipeline._tracker = Tracker()
+    new_frame = np.zeros((200, 200, 3), dtype=np.uint8)
+    pipeline._feed.get_colour_frame.return_value = new_frame
+    pipeline._object_detector.detect.return_value = [
+        Detection(label="person", score=0.87, bbox=(20, 30, 40, 50))
+    ]
+
+    frame = pipeline._get_frame()
+
+    pipeline._object_detector.detect.assert_called_once_with(new_frame)
+    assert frame is new_frame
+    assert tuple(frame[30, 20]) == (255, 255, 255)  # top-left corner
+    assert tuple(frame[80, 60]) == (255, 255, 255)  # bottom-right corner

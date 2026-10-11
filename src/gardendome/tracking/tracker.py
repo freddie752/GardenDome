@@ -21,3 +21,13 @@ class Tracker:
         cx, cy = int(centre[0]), int(centre[1])
         cv2.circle(frame, (cx, cy), 5, (255, 255, 255), -1)
         return frame
+
+    @staticmethod
+    def draw_label(frame, bbox, text):
+        """Draws text above the top-left corner of a pixel (x, y, w, h) box."""
+        x, y, _, _ = bbox
+        cv2.putText(
+            frame, text, (x, max(y - 10, 20)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2,
+        )
+        return frame
