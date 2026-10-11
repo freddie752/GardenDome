@@ -3,6 +3,7 @@
 .vscode
 nohup.out
 __pycache__/
+*.pyc
 
 # Setuptools build and metadata artifacts
 *.egg-info/
