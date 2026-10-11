@@ -1,4 +1,4 @@
-from gardendome.turret_control.PCA9685 import PCA9685
+from gardendome.vendor.PCA9685 import PCA9685
 
 
 from dataclasses import dataclass
