@@ -11,6 +11,7 @@ DETECTOR_MODEL_PATH = "models/ssd_mobilenet_v1/detect.tflite"
 DETECTOR_LABELS_PATH = "models/ssd_mobilenet_v1/labelmap.txt"
 DETECTOR_SCORE_THRESHOLD = 0.5
 DETECTOR_NUM_THREADS = 4
+DETECTOR_TARGET_LABEL = "person"
 
 # Slack
 SLACK_LOGGING = True

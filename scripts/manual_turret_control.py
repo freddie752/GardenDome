@@ -36,9 +36,9 @@ def main():
             elif key == "s":
                 turret.set_tilt(turret.current_tilt + config.TURRET_AIM_ADJUST)
             elif key == "a":
-                turret.set_pan(turret.current_pan - config.TURRET_AIM_ADJUST)
-            elif key == "d":
                 turret.set_pan(turret.current_pan + config.TURRET_AIM_ADJUST)
+            elif key == "d":
+                turret.set_pan(turret.current_pan - config.TURRET_AIM_ADJUST)
             elif key == "q":
                 break
             print(

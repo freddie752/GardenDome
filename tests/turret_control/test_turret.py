@@ -136,14 +136,14 @@ def test_aim_pans_left_when_object_left_of_centre():
     turret = make_turret()
     original_pan = turret.current_pan
     turret.aim(centre=(30, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan - turret._aim_adjust
+    assert turret.current_pan == original_pan + turret._aim_adjust
 
 
 def test_aim_pans_right_when_object_right_of_centre():
     turret = make_turret()
     original_pan = turret.current_pan
     turret.aim(centre=(70, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan + turret._aim_adjust
+    assert turret.current_pan == original_pan - turret._aim_adjust
 
 
 def test_aim_tilts_up_when_object_above_centre():

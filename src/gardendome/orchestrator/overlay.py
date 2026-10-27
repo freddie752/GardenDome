@@ -39,7 +39,5 @@ class ObjectOverlayPipeline(BaseDisplayPipeline, ObjectDetectorMixin, TrackerMix
     def _get_frame(self):
         frame, detections = self._poll_detections()
         for detection in detections:
-            frame = self._tracker.draw_box(frame, detection.bbox)
-            label = f"{detection.label} {detection.score:.0%}"
-            frame = self._tracker.draw_label(frame, detection.bbox, label)
+            frame = self._tracker.draw_detection(frame, detection)
         return frame

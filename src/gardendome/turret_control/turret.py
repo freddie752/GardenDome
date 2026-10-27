@@ -69,10 +69,10 @@ class Turret:
         self._moved = False
 
         if centre_x < frame_centre_x - self._dead_zone:
-            self.set_pan(self.current_pan - self._aim_adjust)
+            self.set_pan(self.current_pan + self._aim_adjust)
             self._moved = True
         elif centre_x > frame_centre_x + self._dead_zone:
-            self.set_pan(self.current_pan + self._aim_adjust)
+            self.set_pan(self.current_pan - self._aim_adjust)
             self._moved = True
 
         if centre_y < frame_centre_y - self._dead_zone:

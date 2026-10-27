@@ -31,3 +31,10 @@ class Tracker:
             cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2,
         )
         return frame
+
+    @staticmethod
+    def draw_detection(frame, detection):
+        frame = Tracker.draw_box(frame, detection.bbox)
+        label = f"{detection.label} {detection.score:.0%}"
+        return Tracker.draw_label(frame, detection.bbox, label)
+
