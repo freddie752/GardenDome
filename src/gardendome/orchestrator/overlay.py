@@ -6,7 +6,7 @@ from gardendome.orchestrator.base import (
 )
 
 
-class LiveFeedPipeline(BaseDisplayPipeline):
+class RawFeedPipeline(BaseDisplayPipeline):
     def __init__(self, config, colour=True):
         super().__init__(config)
         self._colour = colour
@@ -19,7 +19,7 @@ class LiveFeedPipeline(BaseDisplayPipeline):
         )
 
 
-class MotionDisplayPipeline(BaseDisplayPipeline, MotionDetectorMixin, TrackerMixin):
+class MotionOverlayPipeline(BaseDisplayPipeline, MotionDetectorMixin, TrackerMixin):
     def __init__(self, config):
         super().__init__(config)
         self._setup_motion_detector()
@@ -30,7 +30,7 @@ class MotionDisplayPipeline(BaseDisplayPipeline, MotionDetectorMixin, TrackerMix
         return self._tracker.draw_box(frame, bbox) if bbox else frame
 
 
-class ObjectDisplayPipeline(BaseDisplayPipeline, ObjectDetectorMixin, TrackerMixin):
+class ObjectOverlayPipeline(BaseDisplayPipeline, ObjectDetectorMixin, TrackerMixin):
     def __init__(self, config):
         super().__init__(config)
         self._setup_object_detector()

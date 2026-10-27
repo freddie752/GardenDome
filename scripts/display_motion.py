@@ -1,6 +1,6 @@
 from gardendome import config
-from gardendome.orchestrator.live_feed import MotionDisplayPipeline
+from gardendome.orchestrator.overlay import MotionOverlayPipeline
 
 if __name__ == '__main__':
-    with MotionDisplayPipeline(config) as pipeline:
+    with MotionOverlayPipeline(config) as pipeline:
         pipeline.run()

@@ -6,7 +6,7 @@ from gardendome.orchestrator.base import (
 )
 
 
-class TurretTracker(
+class MotionFollowPipeline(
     BaseDisplayPipeline, MotionDetectorMixin, TrackerMixin, TurretMixin
 ):
     def __init__(self, config):

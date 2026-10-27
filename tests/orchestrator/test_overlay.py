@@ -1,16 +1,16 @@
 import numpy as np
 from unittest.mock import MagicMock, patch
 from gardendome.detectors.object_detector import Detection
-from gardendome.orchestrator.live_feed import (
-    LiveFeedPipeline,
-    MotionDisplayPipeline,
-    ObjectDisplayPipeline,
+from gardendome.orchestrator.overlay import (
+    RawFeedPipeline,
+    MotionOverlayPipeline,
+    ObjectOverlayPipeline,
 )
 from gardendome.tracking.tracker import Tracker
 
 
 def make_pipeline():
-    pipeline = LiveFeedPipeline.__new__(LiveFeedPipeline)
+    pipeline = RawFeedPipeline.__new__(RawFeedPipeline)
     pipeline._config = MagicMock()
     pipeline._logger = MagicMock()
     pipeline._feed = MagicMock()
@@ -94,7 +94,7 @@ def test_step_gets_grey_frame_when_colour_false():
 
 
 def test_motion_display_draws_box_on_analysed_frame():
-    pipeline = MotionDisplayPipeline.__new__(MotionDisplayPipeline)
+    pipeline = MotionOverlayPipeline.__new__(MotionOverlayPipeline)
     pipeline._feed = MagicMock()
     pipeline._motion_detector = MagicMock()
     pipeline._tracker = Tracker()
@@ -115,7 +115,7 @@ def test_motion_display_draws_box_on_analysed_frame():
 
 
 def test_object_display_draws_box_on_analysed_frame():
-    pipeline = ObjectDisplayPipeline.__new__(ObjectDisplayPipeline)
+    pipeline = ObjectOverlayPipeline.__new__(ObjectOverlayPipeline)
     pipeline._feed = MagicMock()
     pipeline._object_detector = MagicMock()
     pipeline._tracker = Tracker()
