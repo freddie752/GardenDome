@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import numpy as np
+import pytest
 
 from gardendome.detectors.object_detector import ObjectDetector
 
@@ -10,7 +11,7 @@ PERSON = 0
 CUP = 46
 
 
-def make_detector(boxes, class_ids, scores, score_threshold=0.5):
+def make_detector(boxes, class_ids, scores, score_threshold=0.5, target_label=None):
     interpreter = MagicMock()
     interpreter.get_input_details.return_value = [
         {"index": 0, "shape": np.array([1, 300, 300, 3], dtype=np.int32)}
@@ -31,6 +32,7 @@ def make_detector(boxes, class_ids, scores, score_threshold=0.5):
             num_threads=4,
             labels_path=LABELS_PATH,
             score_threshold=score_threshold,
+            target_label=target_label,
         )
     return detector, interpreter
 
@@ -43,7 +45,7 @@ def test_detect_returns_label_score_and_pixel_bbox():
     detector, _ = make_detector(
         boxes=[[0.25, 0.1, 0.75, 0.4]], class_ids=[CUP], scores=[0.9]
     )
-    [detection] = detector.detect(colour_frame(480, 640))
+    [detection] = detector.detect_all(colour_frame(480, 640))
     assert detection.label == "cup"
     assert detection.score == np.float32(0.9)
     assert detection.bbox == (64, 120, 192, 240)
@@ -55,13 +57,13 @@ def test_detect_stops_at_first_score_below_threshold():
         class_ids=[PERSON, CUP, PERSON],
         scores=[0.9, 0.6, 0.3],
     )
-    detections = detector.detect(colour_frame(480, 640))
+    detections = detector.detect_all(colour_frame(480, 640))
     assert [d.label for d in detections] == ["person", "cup"]
 
 
 def test_detect_returns_empty_when_no_score_meets_threshold():
     detector, _ = make_detector(boxes=[[0, 0, 1, 1]], class_ids=[PERSON], scores=[0.4])
-    assert detector.detect(colour_frame(480, 640)) == []
+    assert detector.detect_all(colour_frame(480, 640)) == []
 
 
 def test_detect_sends_model_sized_rgb_batch():
@@ -71,9 +73,46 @@ def test_detect_sends_model_sized_rgb_batch():
     frame = colour_frame(480, 640)
     frame[:, :] = (255, 0, 0)  # pure blue in BGR
 
-    detector.detect(frame)
+    detector.detect_all(frame)
 
     index, input_data = interpreter.set_tensor.call_args.args
     assert index == 0
     assert input_data.shape == (1, 300, 300, 3)
     assert tuple(input_data[0, 0, 0]) == (0, 0, 255)  # pure blue in RGB
+
+
+def test_detect_target_skips_other_labels_and_returns_highest_scoring_target():
+    detector, _ = make_detector(
+        boxes=[[0, 0, 1, 1], [0.25, 0.1, 0.75, 0.4], [0, 0, 1, 1]],
+        class_ids=[CUP, PERSON, PERSON],
+        scores=[0.9, 0.8, 0.7],
+        target_label="person",
+    )
+    detection = detector.detect_target(colour_frame(480, 640))
+    assert detection.label == "person"
+    assert detection.score == np.float32(0.8)
+    assert detection.bbox == (64, 120, 192, 240)
+
+
+def test_detect_target_returns_none_when_target_absent():
+    detector, _ = make_detector(
+        boxes=[[0, 0, 1, 1]], class_ids=[CUP], scores=[0.9], target_label="person"
+    )
+    assert detector.detect_target(colour_frame(480, 640)) is None
+
+
+def test_detect_target_returns_none_when_target_below_threshold():
+    detector, _ = make_detector(
+        boxes=[[0, 0, 1, 1]] * 2,
+        class_ids=[CUP, PERSON],
+        scores=[0.9, 0.3],
+        target_label="person",
+    )
+    assert detector.detect_target(colour_frame(480, 640)) is None
+
+
+def test_unknown_target_label_raises():
+    with pytest.raises(ValueError, match="people"):
+        make_detector(
+            boxes=[[0, 0, 1, 1]], class_ids=[PERSON], scores=[0.9], target_label="people"
+        )

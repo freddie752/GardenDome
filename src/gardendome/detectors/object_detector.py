@@ -15,26 +15,33 @@ class Detection:
 class ObjectDetector:
     """Detector for the COCO ssd_mobilenet_v1 TFLite model (uint8 input)."""
 
-    def __init__(self, model_path, num_threads, labels_path, score_threshold):
+    def __init__(
+        self, model_path, num_threads, labels_path, score_threshold, target_label=None
+    ):
         self._interpreter = Interpreter(model_path=model_path, num_threads=num_threads)
         self._interpreter.allocate_tensors()
         self._labels = self._load_labels(labels_path)
+        if target_label and target_label not in self._labels:
+            raise ValueError(f"Unknown target label: {target_label}")
+        self._target_label = target_label
         self._score_threshold = score_threshold
         self._input_details = self._interpreter.get_input_details()[0]
         self._output_details = self._interpreter.get_output_details()
         _, self._input_h, self._input_w, _ = self._input_details["shape"]
 
-    def detect(self, bgr_frame):
-        """Returns detections above the score threshold, highest score first."""
-        frame_h, frame_w = bgr_frame.shape[:2]
+    def _infer(self, bgr_frame):
+        """Runs the model on the frame; returns its raw boxes, class ids and scores."""
         self._interpreter.set_tensor(
             self._input_details["index"], self._prepare_input(bgr_frame)
         )
         self._interpreter.invoke()
 
-        boxes = self._get_output(0)
-        class_ids = self._get_output(1)
-        scores = self._get_output(2)
+        return self._get_output(0), self._get_output(1), self._get_output(2)
+
+    def detect_all(self, bgr_frame):
+        """Returns detections above the score threshold, highest score first."""
+        frame_h, frame_w = bgr_frame.shape[:2]
+        boxes, class_ids, scores = self._infer(bgr_frame)
 
         # The model outputs detections in descending score order
         detections = []
@@ -49,6 +56,13 @@ class ObjectDetector:
                 )
             )
         return detections
+
+    def detect_target(self, bgr_frame):
+        """Returns the highest-scoring detection of the target label above the score threshold, or None."""
+        return next(
+            (d for d in self.detect_all(bgr_frame) if d.label == self._target_label),
+            None,
+        )
 
     @staticmethod
     def _load_labels(labels_path):

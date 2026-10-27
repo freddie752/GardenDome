@@ -105,7 +105,7 @@ class ObjectDetectorMixin:
     def _poll_detections(self):
         """Grabs the next colour frame; returns it and its detections, highest score first."""
         current_frame = self._feed.get_colour_frame()
-        return current_frame, self._object_detector.detect(current_frame)
+        return current_frame, self._object_detector.detect_all(current_frame)
 
 
 class TurretMixin:
