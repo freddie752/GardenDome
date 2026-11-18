@@ -10,7 +10,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
-# The default GITHUB_TOKEN can write to the repo; nothing here needs that.
 permissions:
   contents: read
 
@@ -18,7 +17,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      # Full history is needed to diff against main.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -34,8 +32,6 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      # Lint only files changed vs main, using the same hooks as locally.
-      # Values go through env rather than ${{ }} inside the script (avoids script injection).
       - name: Run pre-commit on changed files
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -61,9 +57,39 @@ jobs:
 
       - run: pytest --cov --cov-report=term --cov-report=json
 
-      - id: coverage
-        name: Report coverage
+      - name: Report coverage
+        id: coverage
         run: |
           percent=$(python -c "import json; print(round(json.load(open('coverage.json'))['totals']['percent_covered'], 2))")
           echo "percent=$percent" >> "$GITHUB_OUTPUT"
           echo "### Coverage: ${percent}%" >> "$GITHUB_STEP_SUMMARY"
+
+  coverage-gate:
+    if: github.event_name == 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: pip install -r requirements.txt -e .
+
+      - run: pytest --cov --cov-report=json
+
+      - name: Compare coverage with base
+        env:
+          PR_COVERAGE: ${{ needs.test.outputs.coverage }}
+        run: |
+          base=$(python -c "import json; print(round(json.load(open('coverage.json'))['totals']['percent_covered'], 2))")
+          echo "### Coverage: ${PR_COVERAGE}% (base: ${base}%)" >> "$GITHUB_STEP_SUMMARY"
+          if awk -v pr="$PR_COVERAGE" -v base="$base" 'BEGIN { exit !(pr < base) }'; then
+            echo "::error::Coverage dropped from ${base}% to ${PR_COVERAGE}%"
+            exit 1
+          fi
