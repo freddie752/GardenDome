@@ -16,7 +16,11 @@ def make_detector(boxes, class_ids, scores, score_threshold=0.5, target_label=No
     interpreter.get_input_details.return_value = [
         {"index": 0, "shape": np.array([1, 300, 300, 3], dtype=np.int32)}
     ]
-    interpreter.get_output_details.return_value = [{"index": 1}, {"index": 2}, {"index": 3}]
+    interpreter.get_output_details.return_value = [
+        {"index": 1},
+        {"index": 2},
+        {"index": 3},
+    ]
     outputs = {
         1: np.array([boxes], dtype=np.float32),
         2: np.array([class_ids], dtype=np.float32),
@@ -114,5 +118,8 @@ def test_detect_target_returns_none_when_target_below_threshold():
 def test_unknown_target_label_raises():
     with pytest.raises(ValueError, match="people"):
         make_detector(
-            boxes=[[0, 0, 1, 1]], class_ids=[PERSON], scores=[0.9], target_label="people"
+            boxes=[[0, 0, 1, 1]],
+            class_ids=[PERSON],
+            scores=[0.9],
+            target_label="people",
         )

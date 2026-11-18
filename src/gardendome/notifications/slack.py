@@ -21,7 +21,9 @@ class SlackBot:
 
     def send_message(self, message):
         try:
-            resp = self._app.client.chat_postMessage(channel=self._channel, text=message)
+            resp = self._app.client.chat_postMessage(
+                channel=self._channel, text=message
+            )
             return resp
         except Exception as e:
             print(f"Failed to send message: {e}")

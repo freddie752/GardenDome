@@ -17,6 +17,7 @@ def make_pipeline():
     pipeline._previous_motion = False
     return pipeline
 
+
 def test_motion_start_triggers_recorder_start():
     pipeline = make_pipeline()
     pipeline._handle_transitions(current_motion=True)

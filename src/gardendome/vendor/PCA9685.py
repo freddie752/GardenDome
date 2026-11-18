@@ -34,20 +34,20 @@ class PCA9685:
     if (self.debug):
       print("Reseting PCA9685")
     self.write(self.__MODE1, 0x00)
-	
+
   def write(self, reg, value):
     "Writes an 8-bit value to the specified register/address"
     self.bus.write_byte_data(self.address, reg, value)
     if (self.debug):
       print("I2C: Write 0x%02X to register 0x%02X" % (value, reg))
-	  
+
   def read(self, reg):
     "Read an unsigned byte from the I2C device"
     result = self.bus.read_byte_data(self.address, reg)
     if (self.debug):
       print("I2C: Device 0x%02X returned 0x%02X from reg 0x%02X" % (self.address, result & 0xFF, reg))
     return result
-	
+
   def setPWMFreq(self, freq):
     "Sets the PWM frequency"
     prescaleval = 25000000.0    # 25MHz
@@ -78,23 +78,22 @@ class PCA9685:
     self.write(self.__LED0_OFF_H+4*channel, off >> 8)
     if (self.debug):
       print("channel: %d  LED_ON: %d LED_OFF: %d" % (channel,on,off))
-	  
+
   def setServoPulse(self, channel, pulse):
     "Sets the Servo Pulse,The PWM frequency must be 50HZ"
     pulse = pulse*4096/20000        #PWM frequency is 50HZ,the period is 20000us
     self.setPWM(channel, 0, int(pulse))
-    
-  def setRotationAngle(self, channel, Angle): 
+
+  def setRotationAngle(self, channel, Angle):
     if(Angle >= 0 and Angle <= 180):
         temp = Angle * (2000 / 180) + 501
         self.setServoPulse(channel, temp)
     else:
         print("Angle out of range")
-        
+
   def start_PCA9685(self):
     self.write(self.__MODE2, 0x04)
     #Just restore the stopped state that should be set for exit_PCA9685
-    
+
   def exit_PCA9685(self):
     self.write(self.__MODE2, 0x00)#Please use initialization or __MODE2 =0x04
-

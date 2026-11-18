@@ -72,9 +72,7 @@ def test_step_shows_frame_in_correct_window():
 
 def test_stop_cleans_up():
     pipeline = make_pipeline()
-    with patch(
-        "gardendome.orchestrator.base.cv2.destroyAllWindows"
-    ) as mock_destroy:
+    with patch("gardendome.orchestrator.base.cv2.destroyAllWindows") as mock_destroy:
         pipeline.stop()
     mock_destroy.assert_called_once()
     pipeline._picam2.stop.assert_called_once()

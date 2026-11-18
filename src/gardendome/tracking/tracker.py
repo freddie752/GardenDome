@@ -27,8 +27,13 @@ class Tracker:
         """Draws text above the top-left corner of a pixel (x, y, w, h) box."""
         x, y, _, _ = bbox
         cv2.putText(
-            frame, text, (x, max(y - 10, 20)),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2,
+            frame,
+            text,
+            (x, max(y - 10, 20)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (255, 255, 255),
+            2,
         )
         return frame
 
@@ -37,4 +42,3 @@ class Tracker:
         frame = Tracker.draw_box(frame, detection.bbox)
         label = f"{detection.label} {detection.score:.0%}"
         return Tracker.draw_label(frame, detection.bbox, label)
-
