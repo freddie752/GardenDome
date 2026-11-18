@@ -11,3 +11,4 @@ __pycache__/
 
 # Test coverage
 .coverage
+coverage.json
