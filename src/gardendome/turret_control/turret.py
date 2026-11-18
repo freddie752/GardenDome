@@ -34,10 +34,10 @@ class Turret:
         self.set_tilt(turret_config.start_tilt)
         self.set_pan(turret_config.start_pan)
 
-    def set_tilt(self, tilt_coord):
-        if self._min_tilt <= tilt_coord <= self._max_tilt:
-            self._pwm.setRotationAngle(0, tilt_coord)
-            self._current_tilt = tilt_coord
+    def set_tilt(self, tilt_angle):
+        if self._min_tilt <= tilt_angle <= self._max_tilt:
+            self._pwm.setRotationAngle(0, tilt_angle)
+            self._current_tilt = tilt_angle
         else:
             self._logger.info("Invalid tilt coord")
 
@@ -45,10 +45,10 @@ class Turret:
     def current_tilt(self):
         return self._current_tilt
 
-    def set_pan(self, pan_coord):
-        if self._min_pan <= pan_coord <= self._max_pan:
-            self._pwm.setRotationAngle(1, pan_coord)
-            self._current_pan = pan_coord
+    def set_pan(self, pan_angle):
+        if self._min_pan <= pan_angle <= self._max_pan:
+            self._pwm.setRotationAngle(1, pan_angle)
+            self._current_pan = pan_angle
         else:
             self._logger.info("Invalid pan coord")
 
