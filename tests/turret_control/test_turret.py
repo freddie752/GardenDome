@@ -187,3 +187,59 @@ def test_aim_sets_moved_false_when_within_dead_zone():
     turret = make_turret()
     turret.aim(centre=(50, 50), frame_shape=FRAME_SHAPE)
     assert turret.moved is False
+
+
+def test_move_to_updates_current_angles():
+    turret = make_turret()
+    turret.move_to(pan_angle=45, tilt_angle=100)
+    assert turret.current_pan == 45
+    assert turret.current_tilt == 100
+
+
+def test_move_to_returns_true_when_moved():
+    turret = make_turret()
+    assert turret.move_to(pan_angle=45, tilt_angle=100) is True
+
+
+def test_move_to_clamps_above_max():
+    turret = make_turret()
+    turret.move_to(pan_angle=200, tilt_angle=200)
+    assert turret.current_pan == VALID_CONFIG.max_pan
+    assert turret.current_tilt == VALID_CONFIG.max_tilt
+
+
+def test_move_to_clamps_below_min():
+    turret = make_turret()
+    turret.move_to(pan_angle=-20, tilt_angle=0)
+    assert turret.current_pan == VALID_CONFIG.min_pan
+    assert turret.current_tilt == VALID_CONFIG.min_tilt
+
+
+def test_move_to_returns_false_when_already_there():
+    turret = make_turret()
+    moved = turret.move_to(
+        pan_angle=VALID_CONFIG.start_pan, tilt_angle=VALID_CONFIG.start_tilt
+    )
+    assert moved is False
+    turret._pwm.setRotationAngle.assert_not_called()
+
+
+def test_move_to_returns_false_when_at_limit_and_target_beyond():
+    turret = make_turret()
+    turret.move_to(pan_angle=VALID_CONFIG.max_pan, tilt_angle=VALID_CONFIG.max_tilt)
+    turret._pwm.setRotationAngle.reset_mock()
+    moved = turret.move_to(pan_angle=200, tilt_angle=200)
+    assert moved is False
+    turret._pwm.setRotationAngle.assert_not_called()
+
+
+def test_move_to_only_writes_pan_when_tilt_unchanged():
+    turret = make_turret()
+    turret.move_to(pan_angle=45, tilt_angle=VALID_CONFIG.start_tilt)
+    turret._pwm.setRotationAngle.assert_called_once_with(1, 45)
+
+
+def test_move_to_only_writes_tilt_when_pan_unchanged():
+    turret = make_turret()
+    turret.move_to(pan_angle=VALID_CONFIG.start_pan, tilt_angle=100)
+    turret._pwm.setRotationAngle.assert_called_once_with(0, 100)
