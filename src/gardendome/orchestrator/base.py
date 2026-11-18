@@ -100,7 +100,7 @@ class ObjectDetectorMixin:
             num_threads=self._config.DETECTOR_NUM_THREADS,
             labels_path=self._config.DETECTOR_LABELS_PATH,
             score_threshold=self._config.DETECTOR_SCORE_THRESHOLD,
-            target_label=self._config.DETECTOR_TARGET_LABEL
+            target_label=self._config.DETECTOR_TARGET_LABEL,
         )
 
     def _poll_detections(self):
@@ -112,6 +112,7 @@ class ObjectDetectorMixin:
         """Grabs the next colour frame; returns it and its highest-scoring target detection, or None."""
         current_frame = self._feed.get_colour_frame()
         return current_frame, self._object_detector.detect_target(current_frame)
+
 
 class TurretMixin:
     def _setup_turret(self):

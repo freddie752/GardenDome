@@ -1,10 +1,11 @@
+import os
+
+import requests
+from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
-import os
-import requests
 
-from dotenv import load_dotenv
 load_dotenv()
 
 SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")
@@ -20,7 +21,9 @@ class SlackBot:
 
     def send_message(self, message):
         try:
-            resp = self._app.client.chat_postMessage(channel=self._channel, text=message)
+            resp = self._app.client.chat_postMessage(
+                channel=self._channel, text=message
+            )
             return resp
         except Exception as e:
             print(f"Failed to send message: {e}")

@@ -45,7 +45,7 @@ class ObjectDetector:
 
         # The model outputs detections in descending score order
         detections = []
-        for box, class_id, score in zip(boxes, class_ids, scores):
+        for box, class_id, score in zip(boxes, class_ids, scores, strict=True):
             if score < self._score_threshold:
                 break
             detections.append(
@@ -67,7 +67,7 @@ class ObjectDetector:
     @staticmethod
     def _load_labels(labels_path):
         """Returns the label names indexed by the model's class ids."""
-        with open(labels_path, "r") as f:
+        with open(labels_path) as f:
             labels = [line.strip() for line in f]
         # First line is a "???" placeholder; the model's class ids start after it
         return labels[1:]

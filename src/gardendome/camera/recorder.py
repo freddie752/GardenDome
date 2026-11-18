@@ -1,6 +1,7 @@
 from datetime import datetime
-from picamera2.outputs import FileOutput
+
 from picamera2.encoders import H264Encoder
+from picamera2.outputs import FileOutput
 
 
 class Picamera2Recorder:
@@ -25,7 +26,7 @@ class Picamera2Recorder:
         file_output = FileOutput(f"{self._recording_dir}{self._current_file}")
         self._camera.start_recording(self._encoder, file_output)
         self._logger.info(f"Recording started. Storing at {self._current_file}")
-        
+
     def stop(self):
         if not self._is_recording:
             raise RuntimeError("Cannot stop recording: Recorder is not active.")
@@ -34,4 +35,3 @@ class Picamera2Recorder:
         self._current_file = None
         self._is_recording = False
         self._logger.info("Recording stopped.")
-        

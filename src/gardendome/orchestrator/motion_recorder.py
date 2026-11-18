@@ -2,10 +2,10 @@
 
 from gardendome.orchestrator.base import (
     BasePipeline,
-    LoggingMixin,
     CameraMixin,
-    RecorderMixin,
+    LoggingMixin,
     MotionDetectorMixin,
+    RecorderMixin,
 )
 
 

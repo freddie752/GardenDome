@@ -31,7 +31,9 @@ class MotionFollowPipeline(
         return frame
 
 
-class ObjectFollowPipeline(BaseDisplayPipeline, ObjectDetectorMixin, TrackerMixin, TurretMixin):
+class ObjectFollowPipeline(
+    BaseDisplayPipeline, ObjectDetectorMixin, TrackerMixin, TurretMixin
+):
     def __init__(self, config):
         super().__init__(config)
         self._setup_turret()

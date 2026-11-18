@@ -1,5 +1,7 @@
-import numpy as np
 from unittest.mock import MagicMock
+
+import numpy as np
+
 from gardendome.camera.feed import Picamera2Feed
 
 

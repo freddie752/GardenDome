@@ -1,5 +1,6 @@
 import os
 
+
 class Logger:
     def __init__(self, slack_logging, slack_bot=None):
         self._slack_bot = slack_bot
