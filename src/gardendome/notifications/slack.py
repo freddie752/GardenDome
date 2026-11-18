@@ -1,10 +1,11 @@
+import os
+
+import requests
+from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
-import os
-import requests
 
-from dotenv import load_dotenv
 load_dotenv()
 
 SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")

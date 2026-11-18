@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from gardendome.detectors.motion_detector import MotionDetector
 
 

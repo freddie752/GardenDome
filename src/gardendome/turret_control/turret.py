@@ -1,7 +1,6 @@
-from gardendome.vendor.PCA9685 import PCA9685
-
-
 from dataclasses import dataclass
+
+from gardendome.vendor.PCA9685 import PCA9685
 
 
 @dataclass

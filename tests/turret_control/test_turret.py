@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, patch
 
 from gardendome.turret_control.turret import Turret, TurretConfig
 
-
 VALID_CONFIG = TurretConfig(
     min_tilt=65,
     max_tilt=175,

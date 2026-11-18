@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock
+
 import numpy as np
 
 from gardendome.orchestrator.motion_recorder import MotionRecordingPipeline
+
 
 def make_pipeline():
     pipeline = MotionRecordingPipeline.__new__(MotionRecordingPipeline)

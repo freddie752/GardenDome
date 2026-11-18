@@ -1,6 +1,7 @@
 from datetime import datetime
-from picamera2.outputs import FileOutput
+
 from picamera2.encoders import H264Encoder
+from picamera2.outputs import FileOutput
 
 
 class Picamera2Recorder:

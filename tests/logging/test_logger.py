@@ -1,9 +1,10 @@
-import pytest
 from unittest.mock import MagicMock
- 
+
+import pytest
+
 from gardendome.notifications.logger import Logger
- 
- 
+
+
 @pytest.fixture
 def mock_bot():
     return MagicMock()

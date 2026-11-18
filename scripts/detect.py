@@ -1,7 +1,8 @@
-import numpy as np
-from PIL import Image, ImageDraw, ImageFont
-import tensorflow as tf
 import os
+
+import numpy as np
+import tensorflow as tf
+from PIL import Image, ImageDraw, ImageFont
 
 # --- Configuration ---
 MODEL_PATH = "models/ssdmobilenet_v2_640_v2/detect.tflite"      # Path to your TFLite model
@@ -13,7 +14,7 @@ CONFIDENCE_THRESHOLD = 0.5               # Minimum score to consider a detection
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --- Load labels ---
-with open(LABELS_PATH, "r") as f:
+with open(LABELS_PATH) as f:
     labels = [line.strip() for line in f.readlines()]
 
 # --- Load TFLite model ---

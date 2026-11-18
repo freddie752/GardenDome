@@ -1,10 +1,12 @@
-import numpy as np
 from unittest.mock import MagicMock, patch
+
+import numpy as np
+
 from gardendome.detectors.object_detector import Detection
 from gardendome.orchestrator.overlay import (
-    RawFeedPipeline,
     MotionOverlayPipeline,
     ObjectOverlayPipeline,
+    RawFeedPipeline,
 )
 from gardendome.tracking.tracker import Tracker
 

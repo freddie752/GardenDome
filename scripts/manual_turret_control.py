@@ -1,6 +1,7 @@
 import sys
-import tty
 import termios
+import tty
+
 from gardendome import config
 from gardendome.turret_control.turret import Turret, TurretConfig
 
