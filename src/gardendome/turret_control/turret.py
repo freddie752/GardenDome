@@ -34,23 +34,9 @@ class Turret:
         self.set_tilt(turret_config.start_tilt)
         self.set_pan(turret_config.start_pan)
 
-    def set_tilt(self, tilt_angle):
-        if self._min_tilt <= tilt_angle <= self._max_tilt:
-            self._pwm.setRotationAngle(0, tilt_angle)
-            self._current_tilt = tilt_angle
-        else:
-            self._logger.info("Invalid tilt coord")
-
     @property
     def current_tilt(self):
         return self._current_tilt
-
-    def set_pan(self, pan_angle):
-        if self._min_pan <= pan_angle <= self._max_pan:
-            self._pwm.setRotationAngle(1, pan_angle)
-            self._current_pan = pan_angle
-        else:
-            self._logger.info("Invalid pan coord")
 
     @property
     def current_pan(self):
@@ -59,6 +45,20 @@ class Turret:
     @property
     def moved(self):
         return self._moved
+
+    def set_tilt(self, tilt_angle):
+        if self._min_tilt <= tilt_angle <= self._max_tilt:
+            self._pwm.setRotationAngle(0, tilt_angle)
+            self._current_tilt = tilt_angle
+        else:
+            self._logger.info("Invalid tilt coord")
+
+    def set_pan(self, pan_angle):
+        if self._min_pan <= pan_angle <= self._max_pan:
+            self._pwm.setRotationAngle(1, pan_angle)
+            self._current_pan = pan_angle
+        else:
+            self._logger.info("Invalid pan coord")
 
     def aim(self, centre, frame_shape):
         centre_x, centre_y = centre
