@@ -65,13 +65,18 @@ jobs:
           echo "### Coverage: ${percent}%" >> "$GITHUB_STEP_SUMMARY"
 
   coverage-gate:
-    if: github.event_name == 'pull_request'
+    if: github.ref != 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+
+      - name: Check out base commit
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git checkout --detach "${PR_BASE_SHA:-$(git merge-base origin/main HEAD)}"
 
       - uses: actions/setup-python@v7
         with:
