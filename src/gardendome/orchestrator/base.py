@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 import cv2
 from picamera2 import Picamera2
 
+from gardendome.annotation.annotator import Annotator
 from gardendome.camera.feed import Picamera2Feed
 from gardendome.camera.recorder import Picamera2Recorder
 from gardendome.detectors.motion_detector import MotionDetector
 from gardendome.detectors.object_detector import ObjectDetector
 from gardendome.notifications.logger import Logger
 from gardendome.notifications.slack import SlackBot
-from gardendome.tracking.tracker import Tracker
 from gardendome.turret_control.turret import Turret, TurretConfig
 
 
@@ -142,9 +142,9 @@ class TurretMixin:
         self._turret = Turret(logger=self._logger, turret_config=turret_config)
 
 
-class TrackerMixin:
-    def _setup_tracker(self):
-        self._tracker = Tracker()
+class AnnotatorMixin:
+    def _setup_annotator(self):
+        self._annotator = Annotator()
 
 
 class BaseDisplayPipeline(BasePipeline, CameraMixin, LoggingMixin):

@@ -2,13 +2,13 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 
+from gardendome.annotation.annotator import Annotator
 from gardendome.detectors.object_detector import Detection
 from gardendome.orchestrator.overlay import (
     MotionOverlayPipeline,
     ObjectOverlayPipeline,
     RawFeedPipeline,
 )
-from gardendome.tracking.tracker import Tracker
 
 
 def make_pipeline():
@@ -97,7 +97,7 @@ def test_motion_display_draws_box_on_analysed_frame():
     pipeline = MotionOverlayPipeline.__new__(MotionOverlayPipeline)
     pipeline._feed = MagicMock()
     pipeline._motion_detector = MagicMock()
-    pipeline._tracker = Tracker()
+    pipeline._annotator = Annotator()
     previous_frame = np.zeros((200, 200), dtype=np.uint8)
     new_frame = np.zeros((200, 200), dtype=np.uint8)
     pipeline._previous_frame = previous_frame
@@ -118,7 +118,7 @@ def test_object_display_draws_box_on_analysed_frame():
     pipeline = ObjectOverlayPipeline.__new__(ObjectOverlayPipeline)
     pipeline._feed = MagicMock()
     pipeline._object_detector = MagicMock()
-    pipeline._tracker = Tracker()
+    pipeline._annotator = Annotator()
     new_frame = np.zeros((200, 200, 3), dtype=np.uint8)
     pipeline._feed.get_colour_frame.return_value = new_frame
     pipeline._object_detector.detect_all.return_value = [
