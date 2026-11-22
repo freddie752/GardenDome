@@ -22,16 +22,9 @@ class FollowController:
 
         return Angles(pan=target_pan, tilt=target_tilt)
 
-    def _calculate_next_position(self, target, current):
-        pan_diff = target.pan - current.pan
-        pan_move = max(min(self._gain * pan_diff, self._max_step), -self._max_step)
-        next_pan = current.pan + pan_move
-
-        tilt_diff = target.tilt - current.tilt
-        tilt_move = max(min(self._gain * tilt_diff, self._max_step), -self._max_step)
-        next_tilt = current.tilt + tilt_move
-
-        return Angles(pan=next_pan, tilt=next_tilt)
+    def _calculate_next_angle(self, error, current_angle):
+        step = max(min(self._gain * error, self._max_step), -self._max_step)
+        return current_angle + step
 
     def update(self, target_centre, frame_shape, current):
         target = self._calculate_target_position(
@@ -39,4 +32,11 @@ class FollowController:
             frame_shape=frame_shape,
             current=current,
         )
-        return self._calculate_next_position(target=target, current=current)
+        error = Angles(pan=target.pan - current.pan, tilt=target.tilt - current.tilt)
+        next_pan = self._calculate_next_angle(
+            error=error.pan, current_angle=current.pan
+        )
+        next_tilt = self._calculate_next_angle(
+            error=error.tilt, current_angle=current.tilt
+        )
+        return Angles(pan=next_pan, tilt=next_tilt)
