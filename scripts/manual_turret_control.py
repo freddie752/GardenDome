@@ -14,9 +14,6 @@ def main():
         max_pan=config.TURRET_MAX_PAN,
         start_tilt=config.TURRET_START_TILT,
         start_pan=config.TURRET_START_PAN,
-        dead_zone=config.TURRET_DEAD_ZONE,
-        aim_adjust=config.TURRET_AIM_ADJUST,
-        settle_frames=config.TURRET_SETTLE_FRAMES,
     )
     logger = type("Logger", (), {"info": print})()
     turret = Turret(logger=logger, turret_config=turret_config)

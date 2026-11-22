@@ -139,9 +139,6 @@ class TurretMixin:
             max_pan=self._config.TURRET_MAX_PAN,
             start_tilt=self._config.TURRET_START_TILT,
             start_pan=self._config.TURRET_START_PAN,
-            dead_zone=self._config.TURRET_DEAD_ZONE,
-            settle_frames=self._config.TURRET_SETTLE_FRAMES,
-            aim_adjust=self._config.TURRET_AIM_ADJUST,
         )
         self._turret = Turret(logger=self._logger, turret_config=turret_config)
 

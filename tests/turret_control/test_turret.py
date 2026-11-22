@@ -10,12 +10,7 @@ VALID_CONFIG = TurretConfig(
     max_pan=180,
     start_tilt=120,
     start_pan=90,
-    dead_zone=10,
-    settle_frames=5,
-    aim_adjust=5,
 )
-
-FRAME_SHAPE = (100, 100)
 
 
 def make_turret():
@@ -130,64 +125,6 @@ def test_set_pan_accepts_max_boundary():
     turret = make_turret()
     turret.set_pan(VALID_CONFIG.max_pan)
     assert turret.current_pan == VALID_CONFIG.max_pan
-
-
-def test_aim_pans_left_when_object_left_of_centre():
-    turret = make_turret()
-    original_pan = turret.current_pan
-    turret.aim(centre=(30, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan + turret._aim_adjust
-
-
-def test_aim_pans_right_when_object_right_of_centre():
-    turret = make_turret()
-    original_pan = turret.current_pan
-    turret.aim(centre=(70, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan - turret._aim_adjust
-
-
-def test_aim_tilts_up_when_object_above_centre():
-    turret = make_turret()
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(50, 30), frame_shape=FRAME_SHAPE)
-    assert turret.current_tilt == original_tilt - turret._aim_adjust
-
-
-def test_aim_tilts_down_when_object_below_centre():
-    turret = make_turret()
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(50, 70), frame_shape=FRAME_SHAPE)
-    assert turret.current_tilt == original_tilt + turret._aim_adjust
-
-
-def test_aim_does_not_move_when_on_target():
-    turret = make_turret()
-    original_pan = turret.current_pan
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(50, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan
-    assert turret.current_tilt == original_tilt
-
-
-def test_aim_does_not_move_when_within_dead_zone():
-    turret = make_turret()
-    original_pan = turret.current_pan
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(40, 40), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan
-    assert turret.current_tilt == original_tilt
-
-
-def test_aim_sets_moved_true_when_outside_dead_zone():
-    turret = make_turret()
-    turret.aim(centre=(30, 50), frame_shape=FRAME_SHAPE)
-    assert turret.moved is True
-
-
-def test_aim_sets_moved_false_when_within_dead_zone():
-    turret = make_turret()
-    turret.aim(centre=(50, 50), frame_shape=FRAME_SHAPE)
-    assert turret.moved is False
 
 
 def test_move_to_updates_current_angles():
