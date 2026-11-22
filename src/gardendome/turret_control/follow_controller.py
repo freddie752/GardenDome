@@ -11,6 +11,7 @@ class FollowConfig:
     max_step: float
     start_threshold: float
     stop_threshold: float
+    settle_time: float
 
 
 class FollowController:
@@ -21,7 +22,9 @@ class FollowController:
         self._max_step = follow_config.max_step
         self._start_threshold = follow_config.start_threshold
         self._stop_threshold = follow_config.stop_threshold
+        self._settle_time = follow_config.settle_time
         self._moving = False
+        self._last_moved = float("-inf")
 
     def _calculate_target_position(self, target_centre, frame_shape, current):
         frame_h, frame_w = frame_shape[:2]
@@ -41,7 +44,10 @@ class FollowController:
         step = max(min(self._gain * error, self._max_step), -self._max_step)
         return current_angle + step
 
-    def update(self, target_centre, frame_shape, current):
+    def update(self, target_centre, frame_shape, current, now):
+        if now - self._last_moved < self._settle_time:
+            return None
+
         target = self._calculate_target_position(
             target_centre=target_centre,
             frame_shape=frame_shape,
@@ -55,6 +61,8 @@ class FollowController:
             return None
 
         self._moving = True
+        self._last_moved = now
+
         next_pan = self._calculate_next_angle(
             error=error.pan, current_angle=current.pan
         )
