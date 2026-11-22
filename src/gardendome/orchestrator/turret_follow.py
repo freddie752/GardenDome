@@ -52,7 +52,9 @@ class ObjectFollowPipeline(BaseFollowPipeline, ObjectDetectorMixin):
         self._setup_object_detector()
 
     def _get_frame(self):
+        poll_start = monotonic()
         frame, target = self._poll_target()
+        print(f"capture + detection: {monotonic() - poll_start:.3f}s")
         if target:
             frame = self._annotator.draw_detection(frame, target)
             frame = self._follow(frame, target.bbox)
