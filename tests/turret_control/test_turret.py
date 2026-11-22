@@ -197,11 +197,6 @@ def test_move_to_updates_current_angles():
     assert turret.current_tilt == 100
 
 
-def test_move_to_returns_true_when_moved():
-    turret = make_turret()
-    assert turret.move_to(Angles(pan=45, tilt=100)) is True
-
-
 def test_move_to_clamps_above_max():
     turret = make_turret()
     turret.move_to(Angles(pan=200, tilt=200))
@@ -216,21 +211,17 @@ def test_move_to_clamps_below_min():
     assert turret.current_tilt == VALID_CONFIG.min_tilt
 
 
-def test_move_to_returns_false_when_already_there():
+def test_move_to_does_not_write_when_already_there():
     turret = make_turret()
-    moved = turret.move_to(
-        Angles(pan=VALID_CONFIG.start_pan, tilt=VALID_CONFIG.start_tilt)
-    )
-    assert moved is False
+    turret.move_to(Angles(pan=VALID_CONFIG.start_pan, tilt=VALID_CONFIG.start_tilt))
     turret._pwm.setRotationAngle.assert_not_called()
 
 
-def test_move_to_returns_false_when_at_limit_and_target_beyond():
+def test_move_to_does_not_write_when_at_limit_and_target_beyond():
     turret = make_turret()
     turret.move_to(Angles(pan=VALID_CONFIG.max_pan, tilt=VALID_CONFIG.max_tilt))
     turret._pwm.setRotationAngle.reset_mock()
-    moved = turret.move_to(Angles(pan=200, tilt=200))
-    assert moved is False
+    turret.move_to(Angles(pan=200, tilt=200))
     turret._pwm.setRotationAngle.assert_not_called()
 
 

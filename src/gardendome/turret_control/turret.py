@@ -87,13 +87,9 @@ class Turret:
             self._moved = True
 
     def move_to(self, position):
-        moved = False
         pan_angle = max(min(position.pan, self._max_pan), self._min_pan)
         tilt_angle = max(min(position.tilt, self._max_tilt), self._min_tilt)
         if pan_angle != self.current_pan:
             self.set_pan(pan_angle)
-            moved = True
         if tilt_angle != self.current_tilt:
             self.set_tilt(tilt_angle)
-            moved = True
-        return moved
