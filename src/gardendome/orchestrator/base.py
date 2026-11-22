@@ -10,6 +10,10 @@ from gardendome.detectors.motion_detector import MotionDetector
 from gardendome.detectors.object_detector import ObjectDetector
 from gardendome.notifications.logger import Logger
 from gardendome.notifications.slack import SlackBot
+from gardendome.turret_control.follow_controller import (
+    FollowConfig,
+    FollowController,
+)
 from gardendome.turret_control.turret import Turret, TurretConfig
 
 
@@ -140,6 +144,20 @@ class TurretMixin:
             aim_adjust=self._config.TURRET_AIM_ADJUST,
         )
         self._turret = Turret(logger=self._logger, turret_config=turret_config)
+
+
+class FollowControllerMixin:
+    def _setup_follow_controller(self):
+        follow_config = FollowConfig(
+            fov_h=self._config.CAMERA_FOV_H,
+            fov_v=self._config.CAMERA_FOV_V,
+            gain=self._config.FOLLOW_GAIN,
+            max_step=self._config.FOLLOW_MAX_STEP,
+            start_threshold=self._config.FOLLOW_START_THRESHOLD,
+            stop_threshold=self._config.FOLLOW_STOP_THRESHOLD,
+            settle_time=self._config.FOLLOW_SETTLE_TIME,
+        )
+        self._follow_controller = FollowController(follow_config)
 
 
 class AnnotatorMixin:
