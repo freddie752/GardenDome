@@ -1,7 +1,7 @@
 import cv2
 
 
-class Tracker:
+class Annotator:
     @staticmethod
     def calculate_centre(bbox):
         """Returns the (x, y) centre of a pixel (x, y, w, h) box."""
@@ -39,6 +39,6 @@ class Tracker:
 
     @staticmethod
     def draw_detection(frame, detection):
-        frame = Tracker.draw_box(frame, detection.bbox)
+        frame = Annotator.draw_box(frame, detection.bbox)
         label = f"{detection.label} {detection.score:.0%}"
-        return Tracker.draw_label(frame, detection.bbox, label)
+        return Annotator.draw_label(frame, detection.bbox, label)

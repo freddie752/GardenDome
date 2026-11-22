@@ -13,7 +13,10 @@ class MotionDetector:
         return self._exceeds_motion_fraction(motion_mask)
 
     def locate_motion(self, previous_frame, current_frame):
-        """Returns the bounding box (x, y, w, h) of the largest motion region, or None."""
+        """Returns the bounding box of the largest motion region, or None.
+
+        The box is (x, y, w, h).
+        """
         motion_mask = self._calculate_motion_mask(previous_frame, current_frame)
         if not self._exceeds_motion_fraction(motion_mask):
             return None
@@ -27,13 +30,16 @@ class MotionDetector:
         return x, y, w, h
 
     def _calculate_motion_mask(self, previous_frame, current_frame):
-        """Returns a boolean mask of pixels whose change exceeds the motion threshold."""
+        """Returns a boolean mask of changed pixels.
+
+        A pixel counts as changed if its change exceeds the motion threshold.
+        """
         if previous_frame.ndim != 2 or current_frame.ndim != 2:
             raise ValueError("Expected greyscale (2D) frames")
         diff_frame = cv2.absdiff(src1=previous_frame, src2=current_frame)
         return diff_frame > self._motion_threshold
 
     def _exceeds_motion_fraction(self, motion_mask):
-        """Returns whether the fraction of changed pixels exceeds the motion fraction."""
+        """Returns whether the changed-pixel fraction exceeds the motion fraction."""
         motion_percentage = np.sum(motion_mask) / motion_mask.size
         return bool(motion_percentage > self._motion_fraction)

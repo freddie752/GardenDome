@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
 
+from gardendome.turret_control.angles import Angles
 from gardendome.turret_control.turret import Turret, TurretConfig
 
 VALID_CONFIG = TurretConfig(
@@ -9,12 +10,7 @@ VALID_CONFIG = TurretConfig(
     max_pan=180,
     start_tilt=120,
     start_pan=90,
-    dead_zone=10,
-    settle_frames=5,
-    aim_adjust=5,
 )
-
-FRAME_SHAPE = (100, 100)
 
 
 def make_turret():
@@ -131,59 +127,54 @@ def test_set_pan_accepts_max_boundary():
     assert turret.current_pan == VALID_CONFIG.max_pan
 
 
-def test_aim_pans_left_when_object_left_of_centre():
+def test_position_returns_current_angles():
     turret = make_turret()
-    original_pan = turret.current_pan
-    turret.aim(centre=(30, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan + turret._aim_adjust
+    turret.move_to(Angles(pan=45, tilt=100))
+    assert turret.position == Angles(pan=45, tilt=100)
 
 
-def test_aim_pans_right_when_object_right_of_centre():
+def test_move_to_updates_current_angles():
     turret = make_turret()
-    original_pan = turret.current_pan
-    turret.aim(centre=(70, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan - turret._aim_adjust
+    turret.move_to(Angles(pan=45, tilt=100))
+    assert turret.current_pan == 45
+    assert turret.current_tilt == 100
 
 
-def test_aim_tilts_up_when_object_above_centre():
+def test_move_to_clamps_above_max():
     turret = make_turret()
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(50, 30), frame_shape=FRAME_SHAPE)
-    assert turret.current_tilt == original_tilt - turret._aim_adjust
+    turret.move_to(Angles(pan=200, tilt=200))
+    assert turret.current_pan == VALID_CONFIG.max_pan
+    assert turret.current_tilt == VALID_CONFIG.max_tilt
 
 
-def test_aim_tilts_down_when_object_below_centre():
+def test_move_to_clamps_below_min():
     turret = make_turret()
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(50, 70), frame_shape=FRAME_SHAPE)
-    assert turret.current_tilt == original_tilt + turret._aim_adjust
+    turret.move_to(Angles(pan=-20, tilt=0))
+    assert turret.current_pan == VALID_CONFIG.min_pan
+    assert turret.current_tilt == VALID_CONFIG.min_tilt
 
 
-def test_aim_does_not_move_when_on_target():
+def test_move_to_does_not_write_when_already_there():
     turret = make_turret()
-    original_pan = turret.current_pan
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(50, 50), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan
-    assert turret.current_tilt == original_tilt
+    turret.move_to(Angles(pan=VALID_CONFIG.start_pan, tilt=VALID_CONFIG.start_tilt))
+    turret._pwm.setRotationAngle.assert_not_called()
 
 
-def test_aim_does_not_move_when_within_dead_zone():
+def test_move_to_does_not_write_when_at_limit_and_target_beyond():
     turret = make_turret()
-    original_pan = turret.current_pan
-    original_tilt = turret.current_tilt
-    turret.aim(centre=(40, 40), frame_shape=FRAME_SHAPE)
-    assert turret.current_pan == original_pan
-    assert turret.current_tilt == original_tilt
+    turret.move_to(Angles(pan=VALID_CONFIG.max_pan, tilt=VALID_CONFIG.max_tilt))
+    turret._pwm.setRotationAngle.reset_mock()
+    turret.move_to(Angles(pan=200, tilt=200))
+    turret._pwm.setRotationAngle.assert_not_called()
 
 
-def test_aim_sets_moved_true_when_outside_dead_zone():
+def test_move_to_only_writes_pan_when_tilt_unchanged():
     turret = make_turret()
-    turret.aim(centre=(30, 50), frame_shape=FRAME_SHAPE)
-    assert turret.moved is True
+    turret.move_to(Angles(pan=45, tilt=VALID_CONFIG.start_tilt))
+    turret._pwm.setRotationAngle.assert_called_once_with(1, 45)
 
 
-def test_aim_sets_moved_false_when_within_dead_zone():
+def test_move_to_only_writes_tilt_when_pan_unchanged():
     turret = make_turret()
-    turret.aim(centre=(50, 50), frame_shape=FRAME_SHAPE)
-    assert turret.moved is False
+    turret.move_to(Angles(pan=VALID_CONFIG.start_pan, tilt=100))
+    turret._pwm.setRotationAngle.assert_called_once_with(0, 100)

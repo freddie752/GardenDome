@@ -18,8 +18,9 @@ skip_empty = true
 
 [tool.ruff]
 target-version = "py312"
+line-length = 88
 extend-exclude = ["src/gardendome/vendor"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP"]
-ignore = ["E501"]
+preview = true
+select = ["E", "W", "F", "I", "B", "UP"]

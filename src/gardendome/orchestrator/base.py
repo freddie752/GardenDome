@@ -3,13 +3,17 @@ from abc import ABC, abstractmethod
 import cv2
 from picamera2 import Picamera2
 
+from gardendome.annotation.annotator import Annotator
 from gardendome.camera.feed import Picamera2Feed
 from gardendome.camera.recorder import Picamera2Recorder
 from gardendome.detectors.motion_detector import MotionDetector
 from gardendome.detectors.object_detector import ObjectDetector
 from gardendome.notifications.logger import Logger
 from gardendome.notifications.slack import SlackBot
-from gardendome.tracking.tracker import Tracker
+from gardendome.turret_control.follow_controller import (
+    FollowConfig,
+    FollowController,
+)
 from gardendome.turret_control.turret import Turret, TurretConfig
 
 
@@ -44,7 +48,7 @@ class LoggingMixin:
 class CameraMixin:
     def _setup_camera(self):
         self._picam2 = Picamera2()
-        camera_config = self._picam2.create_video_configuration()
+        camera_config = self._picam2.create_video_configuration(queue=False)
         self._picam2.configure(camera_config)
         self._picam2.start()
         self._feed = Picamera2Feed(camera=self._picam2)
@@ -69,7 +73,10 @@ class MotionDetectorMixin:
         self._previous_frame = self._feed.get_grey_frame()
 
     def _next_frames(self):
-        """Grabs the next grey frame; returns the previous and new frames and stores the new one."""
+        """Returns the previous grey frame and a newly grabbed one.
+
+        The new frame is stored as the previous frame for the next call.
+        """
         previous_frame = self._previous_frame
         current_frame = self._feed.get_grey_frame()
         self._previous_frame = current_frame
@@ -84,7 +91,10 @@ class MotionDetectorMixin:
         )
 
     def _poll_motion_location(self):
-        """Grabs the next grey frame; returns it and the motion bounding box, or None."""
+        """Grabs the next grey frame and locates motion in it.
+
+        Returns the frame and the motion bounding box, or None.
+        """
         previous_frame, current_frame = self._next_frames()
         bbox = self._motion_detector.locate_motion(
             previous_frame=previous_frame,
@@ -104,12 +114,18 @@ class ObjectDetectorMixin:
         )
 
     def _poll_detections(self):
-        """Grabs the next colour frame; returns it and its detections, highest score first."""
+        """Grabs the next colour frame and runs the object detector on it.
+
+        Returns the frame and its detections, highest score first.
+        """
         current_frame = self._feed.get_colour_frame()
         return current_frame, self._object_detector.detect_all(current_frame)
 
     def _poll_target(self):
-        """Grabs the next colour frame; returns it and its highest-scoring target detection, or None."""
+        """Grabs the next colour frame and finds the target detection in it.
+
+        Returns the frame and its highest-scoring target detection, or None.
+        """
         current_frame = self._feed.get_colour_frame()
         return current_frame, self._object_detector.detect_target(current_frame)
 
@@ -123,16 +139,27 @@ class TurretMixin:
             max_pan=self._config.TURRET_MAX_PAN,
             start_tilt=self._config.TURRET_START_TILT,
             start_pan=self._config.TURRET_START_PAN,
-            dead_zone=self._config.TURRET_DEAD_ZONE,
-            settle_frames=self._config.TURRET_SETTLE_FRAMES,
-            aim_adjust=self._config.TURRET_AIM_ADJUST,
         )
         self._turret = Turret(logger=self._logger, turret_config=turret_config)
 
 
-class TrackerMixin:
-    def _setup_tracker(self):
-        self._tracker = Tracker()
+class FollowControllerMixin:
+    def _setup_follow_controller(self):
+        follow_config = FollowConfig(
+            fov_h=self._config.CAMERA_FOV_H,
+            fov_v=self._config.CAMERA_FOV_V,
+            gain=self._config.FOLLOW_GAIN,
+            max_step=self._config.FOLLOW_MAX_STEP,
+            start_threshold=self._config.FOLLOW_START_THRESHOLD,
+            stop_threshold=self._config.FOLLOW_STOP_THRESHOLD,
+            settle_time=self._config.FOLLOW_SETTLE_TIME,
+        )
+        self._follow_controller = FollowController(follow_config)
+
+
+class AnnotatorMixin:
+    def _setup_annotator(self):
+        self._annotator = Annotator()
 
 
 class BaseDisplayPipeline(BasePipeline, CameraMixin, LoggingMixin):
