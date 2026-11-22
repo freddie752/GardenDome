@@ -32,7 +32,7 @@ CAMERA_FOV_V = 29  # Vertical field of view in degrees (measured on the Pi)
 
 # Following
 FOLLOW_GAIN = 0.5  # Fraction of the error closed per step
-FOLLOW_MAX_STEP = 4  # Largest step in degrees
+FOLLOW_MAX_STEP = 8  # Largest step in degrees
 FOLLOW_START_THRESHOLD = 3  # Error in degrees that starts a move when idle
 FOLLOW_STOP_THRESHOLD = 1  # Error in degrees that stops a move
-FOLLOW_SETTLE_TIME = 0.3  # Seconds to ignore detections after a move
+FOLLOW_SETTLE_TIME = 0.15  # Seconds to ignore detections after a move
