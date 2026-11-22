@@ -48,7 +48,7 @@ class LoggingMixin:
 class CameraMixin:
     def _setup_camera(self):
         self._picam2 = Picamera2()
-        camera_config = self._picam2.create_video_configuration()
+        camera_config = self._picam2.create_video_configuration(queue=False)
         self._picam2.configure(camera_config)
         self._picam2.start()
         self._feed = Picamera2Feed(camera=self._picam2)
