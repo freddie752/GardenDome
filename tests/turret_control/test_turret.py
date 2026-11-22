@@ -127,6 +127,12 @@ def test_set_pan_accepts_max_boundary():
     assert turret.current_pan == VALID_CONFIG.max_pan
 
 
+def test_position_returns_current_angles():
+    turret = make_turret()
+    turret.move_to(Angles(pan=45, tilt=100))
+    assert turret.position == Angles(pan=45, tilt=100)
+
+
 def test_move_to_updates_current_angles():
     turret = make_turret()
     turret.move_to(Angles(pan=45, tilt=100))
