@@ -69,7 +69,10 @@ class MotionDetectorMixin:
         self._previous_frame = self._feed.get_grey_frame()
 
     def _next_frames(self):
-        """Grabs the next grey frame; returns the previous and new frames and stores the new one."""
+        """Returns the previous grey frame and a newly grabbed one.
+
+        The new frame is stored as the previous frame for the next call.
+        """
         previous_frame = self._previous_frame
         current_frame = self._feed.get_grey_frame()
         self._previous_frame = current_frame
@@ -84,7 +87,10 @@ class MotionDetectorMixin:
         )
 
     def _poll_motion_location(self):
-        """Grabs the next grey frame; returns it and the motion bounding box, or None."""
+        """Grabs the next grey frame and locates motion in it.
+
+        Returns the frame and the motion bounding box, or None.
+        """
         previous_frame, current_frame = self._next_frames()
         bbox = self._motion_detector.locate_motion(
             previous_frame=previous_frame,
@@ -104,12 +110,18 @@ class ObjectDetectorMixin:
         )
 
     def _poll_detections(self):
-        """Grabs the next colour frame; returns it and its detections, highest score first."""
+        """Grabs the next colour frame and runs the object detector on it.
+
+        Returns the frame and its detections, highest score first.
+        """
         current_frame = self._feed.get_colour_frame()
         return current_frame, self._object_detector.detect_all(current_frame)
 
     def _poll_target(self):
-        """Grabs the next colour frame; returns it and its highest-scoring target detection, or None."""
+        """Grabs the next colour frame and finds the target detection in it.
+
+        Returns the frame and its highest-scoring target detection, or None.
+        """
         current_frame = self._feed.get_colour_frame()
         return current_frame, self._object_detector.detect_target(current_frame)
 

@@ -58,7 +58,10 @@ class ObjectDetector:
         return detections
 
     def detect_target(self, bgr_frame):
-        """Returns the highest-scoring detection of the target label above the score threshold, or None."""
+        """Returns the highest-scoring detection of the target label, or None.
+
+        Only detections above the score threshold are considered.
+        """
         return next(
             (d for d in self.detect_all(bgr_frame) if d.label == self._target_label),
             None,
@@ -73,13 +76,16 @@ class ObjectDetector:
         return labels[1:]
 
     def _prepare_input(self, bgr_frame):
-        """Returns the frame as an RGB batch of one, resized to the model's input size."""
+        """Returns the frame as an RGB batch of one.
+
+        The frame is resized to the model's input size.
+        """
         rgb_frame = cv2.cvtColor(bgr_frame, cv2.COLOR_BGR2RGB)
         resized = cv2.resize(rgb_frame, (self._input_w, self._input_h))
         return np.expand_dims(resized, axis=0)
 
     def _get_output(self, position):
-        """Returns the model output at the given position, without the batch dimension."""
+        """Returns the model output at the given position, minus the batch dimension."""
         return self._interpreter.get_tensor(self._output_details[position]["index"])[0]
 
     @staticmethod
