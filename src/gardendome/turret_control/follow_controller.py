@@ -1,12 +1,27 @@
+from dataclasses import dataclass
+
 from gardendome.turret_control.angles import Angles
 
 
+@dataclass
+class FollowConfig:
+    fov_h: float
+    fov_v: float
+    gain: float
+    max_step: float
+    start_threshold: float
+    stop_threshold: float
+
+
 class FollowController:
-    def __init__(self, fov_h, fov_v, gain, max_step):
-        self._fov_h = fov_h
-        self._fov_v = fov_v
-        self._gain = gain
-        self._max_step = max_step
+    def __init__(self, follow_config):
+        self._fov_h = follow_config.fov_h
+        self._fov_v = follow_config.fov_v
+        self._gain = follow_config.gain
+        self._max_step = follow_config.max_step
+        self._start_threshold = follow_config.start_threshold
+        self._stop_threshold = follow_config.stop_threshold
+        self._moving = False
 
     def _calculate_target_position(self, target_centre, frame_shape, current):
         frame_h, frame_w = frame_shape[:2]
@@ -33,6 +48,13 @@ class FollowController:
             current=current,
         )
         error = Angles(pan=target.pan - current.pan, tilt=target.tilt - current.tilt)
+
+        threshold = self._stop_threshold if self._moving else self._start_threshold
+        if abs(error.pan) < threshold and abs(error.tilt) < threshold:
+            self._moving = False
+            return None
+
+        self._moving = True
         next_pan = self._calculate_next_angle(
             error=error.pan, current_angle=current.pan
         )
