@@ -1,3 +1,4 @@
+from gardendome.turret_control.angles import Angles
 from gardendome.turret_control.follow_controller import FollowController
 
 FRAME_SHAPE = (160, 240, 3)
@@ -11,8 +12,7 @@ def update(centre, gain, max_step):
     return controller.update(
         target_centre=centre,
         frame_shape=FRAME_SHAPE,
-        current_pan=CURRENT_PAN,
-        current_tilt=CURRENT_TILT,
+        current=Angles(pan=CURRENT_PAN, tilt=CURRENT_TILT),
     )
 
 

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from gardendome.turret_control.angles import Angles
 from gardendome.vendor.PCA9685 import PCA9685
 
 
@@ -43,6 +44,10 @@ class Turret:
         return self._current_tilt
 
     @property
+    def position(self):
+        return Angles(pan=self._current_pan, tilt=self._current_tilt)
+
+    @property
     def moved(self):
         return self._moved
 
@@ -81,10 +86,10 @@ class Turret:
             self.set_tilt(self.current_tilt + self._aim_adjust)
             self._moved = True
 
-    def move_to(self, pan_angle, tilt_angle):
+    def move_to(self, position):
         moved = False
-        pan_angle = max(min(pan_angle, self._max_pan), self._min_pan)
-        tilt_angle = max(min(tilt_angle, self._max_tilt), self._min_tilt)
+        pan_angle = max(min(position.pan, self._max_pan), self._min_pan)
+        tilt_angle = max(min(position.tilt, self._max_tilt), self._min_tilt)
         if pan_angle != self.current_pan:
             self.set_pan(pan_angle)
             moved = True
